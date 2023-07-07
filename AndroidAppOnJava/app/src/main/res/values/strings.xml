@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Android application on Java</string>
+    <string name="choosing_city_name">Choose city</string>
+    <string name="settings">Settings</string>
+    <string name="city1">Moscow</string>
+    <string name="enter_city">Enter city</string>
+    <string name="temperature" translatable="false">-2°</string>
+    <string name="humidity">Humidity</string>
+    <string name="pressure">Pressure</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="humidity_value" translatable="false">88%</string>
+    <string name="pressure_value" translatable="false">749</string>
+    <string name="wind_speed_value" translatable="false">6,4</string>
+    <string name="show_weather_button">Show weather</string>
+    <string name="settings_button">Settings</string>
+    <string name="show_weather_on_internet">Show weather on Internet</string>
+    <string name="night_theme">Night theme</string>
+    <string name="orientation_portrait">Portrait orientation</string>
+    <string name="orientation_landscape">Landscape orientation</string>
+    <string name="localisation_eng">England language</string>
+    <string name="localisation_rus">Russian language</string>
+</resources>

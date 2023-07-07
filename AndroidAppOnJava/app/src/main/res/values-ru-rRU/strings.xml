@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Андроид приложение на Java</string>
+    <string name="choosing_city_name">Выбор города</string>
+    <string name="settings">Настройки</string>
+    <string name="city1">Москва</string>
+    <string name="enter_city">Введите город</string>
+    <string name="humidity">Влажность</string>
+    <string name="pressure">Давление</string>
+    <string name="wind_speed">Скорость ветра</string>
+    <string name="show_weather_button">Показать погоду</string>
+    <string name="settings_button">Настройки</string>
+    <string name="show_weather_on_internet">Показать погоду в Интернете</string>
+    <string name="night_theme">Ночная тема</string>
+    <string name="orientation_portrait">Портретная ориентация</string>
+    <string name="orientation_landscape">Книжная ориентация</string>
+    <string name="localisation_eng">Английский язык</string>
+    <string name="localisation_rus">Русский язык</string>
+</resources>
