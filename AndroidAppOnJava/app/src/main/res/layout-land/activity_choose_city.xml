@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_land"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/cities"
-        android:name="com.gb.androidapponjava.ChoosingCityFragment"
+        android:name="com.gb.androidapponjava.view.ChoosingCityFrag"
         android:layout_width="0px"
         android:layout_height="match_parent"
         android:layout_weight="1"
         tools:layout="@layout/fragment_choose_city" />
 
 
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/weather"
+        android:name="com.gb.androidapponjava.view.ShowWeatherFrag"
         android:layout_width="0px"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@android:color/background_light"/>
+        tools:layout="@layout/fragment_weather"/>
 
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

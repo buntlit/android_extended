@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Андроид приложение на Java</string>
     <string name="choosing_city_name">Выбор города</string>
+    <string name="weather">Погода</string>
     <string name="settings">Настройки</string>
     <string name="city1">Москва</string>
     <string name="enter_city">Введите город</string>
@@ -12,8 +13,12 @@
     <string name="settings_button">Настройки</string>
     <string name="show_weather_on_internet">Показать погоду в Интернете</string>
     <string name="night_theme">Ночная тема</string>
-    <string name="orientation_portrait">Портретная ориентация</string>
-    <string name="orientation_landscape">Книжная ориентация</string>
+    <string name="localization_text">Язык:</string>
     <string name="localisation_eng">Английский язык</string>
     <string name="localisation_rus">Русский язык</string>
+    <string name="weather_parameter_text">Погодные параметры:</string>
+    <string name="weather_at_celsius">Градусы Цельсия</string>
+    <string name="weather_at_kelvin">Кельвины</string>
+    <string name="weather_at_fahrenheit">Фаренгейты</string>
+    <string name="back_button">Назад</string>
 </resources>
