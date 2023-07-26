@@ -13,78 +13,53 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.databinding.FragmentChooseCityBinding;
 import com.gb.androidapponjava.model.Model;
 import com.gb.androidapponjava.viewmodel.DataViewModel;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
-public class ChoosingCityFrag extends Fragment {
+public class ChoosingCityFragment extends Fragment implements CitiesAdapter.OnItemClickListener {
 
     private DataViewModel dataViewModel;
     private FragmentChooseCityBinding fragmentChooseCityBinding;
-    final CitiesAdapter adapter = new CitiesAdapter();
-    private RecyclerView recyclerView = null;
-    private List<String> cities;
-    private MutableLiveData<Model> liveData;
-
-    Pattern checkCity = Pattern.compile("^[A-ZА-Я][a-zа-я]{2,}$");
+    private final CitiesAdapter adapter = new CitiesAdapter(this);
+    private final Pattern checkCity = Pattern.compile("^[A-ZА-Я][a-zа-я]{2,}$");
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         fragmentChooseCityBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_choose_city, container, false);
-        dataViewModel = new ViewModelProvider(getActivity()).get(DataViewModel.class);
-        liveData = dataViewModel.getLiveData();
+        dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
         fragmentChooseCityBinding.setChoosingCityViewmodel(dataViewModel);
         fragmentChooseCityBinding.executePendingBindings();
-        initView();
         return fragmentChooseCityBinding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        liveData.observe(getActivity(), new Observer<Model>() {
-            @Override
-            public void onChanged(Model model) {
-                changeData();
-            }
-        });
-
+        initView();
+        dataViewModel.getLiveData().observe(getViewLifecycleOwner(), this::handleChangeData);
     }
 
     private void initView() {
-        getActivity().setTitle(R.string.choosing_city_name);
-        if (liveData.getValue().isDarkTheme() == true) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
+        requireActivity().setTitle(R.string.choosing_city_name);
+
         fragmentChooseCityBinding.checkBoxHumidity.setChecked(liveData.getValue().isCheckBoxHumidity());
         fragmentChooseCityBinding.checkBoxPressure.setChecked(liveData.getValue().isCheckBoxPressure());
         fragmentChooseCityBinding.checkBoxWindSpeed.setChecked(liveData.getValue().isCheckBoxWindSpeed());
-        recyclerView = fragmentChooseCityBinding.recyclerViewCityList;
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        cities = liveData.getValue().getCities();
-        adapter.setCities(cities);
-        recyclerView.setAdapter(adapter);
-    }
+        fragmentChooseCityBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        fragmentChooseCityBinding.recyclerView.setAdapter(adapter);
 
-    private void changeData() {
         fragmentChooseCityBinding.checkBoxHumidity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                liveData.getValue().setCheckBoxHumidity(b);
-                liveData.setValue(liveData.getValue());
+                model.setCheckBoxHumidity(b);
             }
         });
 
@@ -92,7 +67,6 @@ public class ChoosingCityFrag extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 liveData.getValue().setCheckBoxPressure(b);
-                liveData.setValue(liveData.getValue());
             }
         });
 
@@ -121,17 +95,11 @@ public class ChoosingCityFrag extends Fragment {
                 }
             }
         });
+    }
 
-        adapter.setOnItemClickListener(new CitiesAdapter.OnItemClickListener() {
-            @Override
-            public void onCityTextClick(View view, int position) {
-                saveLiveData(cities.get(position), position);
-                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    startShowWeatherFragment();
-                }
-            }
-
-        });
+    private void handleChangeData(Model model) {
+        changeDarkTheme(model.isDarkTheme());
+        adapter.setCities(model.getCities());
     }
 
     private void startShowWeatherFragment() {
@@ -145,13 +113,6 @@ public class ChoosingCityFrag extends Fragment {
         fragmentTransaction.replace(this.getId(), showWeatherFrag).addToBackStack("frag").commit();
     }
 
-    private void saveLiveData(String cityName, int position) {
-        liveData.getValue().setCities(cities);
-        liveData.getValue().setCityName(cityName);
-        liveData.getValue().setCityIndex(position);
-        liveData.setValue(liveData.getValue());
-    }
-
     private boolean checkEnterCity(String text) {
         if (checkCity.matcher(text).matches()) {
             fragmentChooseCityBinding.enterCity.setError(null);
@@ -159,6 +120,22 @@ public class ChoosingCityFrag extends Fragment {
         } else {
             fragmentChooseCityBinding.enterCity.setError("Wrong city name");
             return false;
+        }
+    }
+
+    @Override
+    public void onCityTextClick(int position) {
+        dataViewModel.onCityClick(position);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            startShowWeatherFragment();
+        }
+    }
+
+    private void changeDarkTheme(Boolean isDarkMode){
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
 }

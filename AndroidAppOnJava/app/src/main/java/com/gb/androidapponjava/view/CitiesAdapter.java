@@ -15,16 +15,23 @@ import java.util.List;
 class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> {
 
     private List<String> cities;
-    private static OnItemClickListener onItemClickListener;
+    private final OnItemClickListener onItemClickListener;
 
     public void setCities(List<String> cities) {
         this.cities = cities;
     }
 
+    public CitiesAdapter(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
     @NonNull
     @Override
     public CityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new CityViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_city_list, parent, false));
+        return new CityViewHolder(
+                LayoutInflater.from(parent.getContext()).inflate(R.layout.item_city_list, parent, false),
+                this.onItemClickListener
+        );
     }
 
     @Override
@@ -43,20 +50,16 @@ class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> {
 
         private final TextView textView;
 
-        public CityViewHolder(@NonNull View itemView) {
+        public CityViewHolder(@NonNull View itemView, OnItemClickListener onItemClickListener) {
             super(itemView);
             textView = itemView.findViewById(R.id.cityTextView);
-
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (onItemClickListener != null) {
-                        onItemClickListener.onCityTextClick(view, getAdapterPosition());
+            textView.setOnClickListener((view) -> {
+                        if (onItemClickListener != null) {
+                            onItemClickListener.onCityTextClick(getAdapterPosition());
+                        }
                     }
-                }
-            });
+            );
         }
-
 
         void bind(String city) {
             textView.setText(city);
@@ -64,11 +67,7 @@ class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> {
     }
 
     public interface OnItemClickListener {
-        void onCityTextClick(View view, int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
+        void onCityTextClick(int position);
     }
 }
 

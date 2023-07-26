@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Model {
     private String cityName;
-    private int cityIndex;
+    private int selectedCityIndex;
     private List<String> cities;
 
     private boolean isCheckBoxHumidity;
@@ -22,12 +22,12 @@ public class Model {
     private float windSpeed;
     private String weatherParameter;
 
-        public Model(String cityName, int cityIndex, List<String> cities
+        public Model(String cityName, int selectedCityIndex, List<String> cities
             , boolean isCheckBoxHumidity, boolean isCheckBoxPressure, boolean isCheckBoxWindSpeed
             , boolean isDarkTheme, boolean isRuLocale, boolean isPortraitLandscape, int cityIndexForApi,
-                 float temperature, float humidity, float pressure, float windSpeed, String weatherParameter) {
+                     float temperature, float humidity, float pressure, float windSpeed, String weatherParameter) {
         this.cityName = cityName;
-        this.cityIndex = cityIndex;
+        this.selectedCityIndex = selectedCityIndex;
         this.cities = cities;
         this.isCheckBoxHumidity = isCheckBoxHumidity;
         this.isCheckBoxPressure = isCheckBoxPressure;
@@ -51,12 +51,12 @@ public class Model {
         this.cityName = cityName;
     }
 
-    public int getCityIndex() {
-        return cityIndex;
+    public int getSelectedCityIndex() {
+        return selectedCityIndex;
     }
 
-    public void setCityIndex(int cityIndex) {
-        this.cityIndex = cityIndex;
+    public void setSelectedCityIndex(int selectedCityIndex) {
+        this.selectedCityIndex = selectedCityIndex;
     }
 
     public List<String> getCities() {

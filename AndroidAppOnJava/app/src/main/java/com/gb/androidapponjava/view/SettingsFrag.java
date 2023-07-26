@@ -152,7 +152,7 @@ public class SettingsFrag extends Fragment {
             }
         }
         liveData.getValue().setCities(cities);
-        liveData.getValue().setCityName(cities.get(liveData.getValue().getCityIndex()));
+        liveData.getValue().setCityName(cities.get(liveData.getValue().getSelectedCityIndex()));
     }
 
     private void setMode(boolean isDarkTheme) {

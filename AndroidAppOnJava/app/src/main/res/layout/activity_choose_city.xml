@@ -9,7 +9,7 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.gb.androidapponjava.view.ChoosingCityFrag"
+        android:name="com.gb.androidapponjava.view.ChoosingCityFragment"
         android:tag="frag"
         tools:layout="@layout/fragment_choose_city" />
 
