@@ -55,12 +55,12 @@ public class DataViewModel extends AndroidViewModel {
         Float pressure = Float.valueOf(context.getResources().getString(R.string.pressure_value));
         Float windSpeed = Float.valueOf(context.getResources().getString(R.string.wind_speed_value));
         return new Model(cities.get(0).toString(), 0, cities,
-                false, false, false,                 false,
+                false, false, false, false,
                 isRuLocale, true, 554233,
                 temperature, humidity, pressure, windSpeed, "celsius");
     }
 
-    public void getWeather(String cityName, String weatherParameter){
+    public void getWeather(String cityName, String weatherParameter) {
         final String URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s%s";
         final String API_KEY = "2f0e5b22131acf399237f29d84fdcfeb";
         final String REQUEST_METHOD = "GET";
@@ -99,4 +99,18 @@ public class DataViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
     }
+
+    public void onCityClick(int position) {
+
+        saveLiveData(cities.get(position), position);
+    }
+
+    void saveLiveData(String cityName, int position) {
+        Model model = getModel();
+        model.setCityName(cityName);
+        model.setSelectedCityIndex(position);
+        liveDataModel.setValue(model);
+    }
+
+    private Model getModel() { return liveDataModel.getValue();}
 }

@@ -10,7 +10,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/cities"
-        android:name="com.gb.androidapponjava.view.ChoosingCityFrag"
+        android:name="com.gb.androidapponjava.view.ChoosingCityFragment"
         android:layout_width="0px"
         android:layout_height="match_parent"
         android:layout_weight="1"

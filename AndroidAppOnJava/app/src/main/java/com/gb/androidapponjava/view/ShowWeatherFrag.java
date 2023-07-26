@@ -109,9 +109,9 @@ public class ShowWeatherFrag extends Fragment {
 
     private String setCitiNameForApi() {
         String name;
-        if (Locale.getDefault().getLanguage().equals("ru") && liveData.getValue().getCityIndex() < getResources().getStringArray(R.array.cities).length) {
+        if (Locale.getDefault().getLanguage().equals("ru") && liveData.getValue().getSelectedCityIndex() < getResources().getStringArray(R.array.cities).length) {
             setLocale("en");
-            name = getResources().getStringArray(R.array.cities)[liveData.getValue().getCityIndex()];
+            name = getResources().getStringArray(R.array.cities)[liveData.getValue().getSelectedCityIndex()];
             setLocale("ru");
         } else {
             name = liveData.getValue().getCityName();
