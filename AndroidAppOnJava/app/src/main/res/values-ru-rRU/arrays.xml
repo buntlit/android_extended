@@ -7,9 +7,4 @@
         <item>Новосибирск</item>
         <item>Самара</item>
     </string-array>
-
-    <string-array name="days">
-        <item>Завтра:</item>
-        <item>Послезавтра:</item>
-    </string-array>
 </resources>

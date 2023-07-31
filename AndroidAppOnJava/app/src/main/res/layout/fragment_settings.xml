@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/nightTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/night_theme"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:checked="false" />
+
+    <LinearLayout
+        android:id="@+id/localisationLinear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nightTheme">
+
+        <TextView
+            android:id="@+id/localisationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/localization_text" />
+
+        <RadioGroup
+            android:id="@+id/localisation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/show_weather_button">
+
+            <RadioButton
+                android:id="@+id/localisationRus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/localisation_rus" />
+
+            <RadioButton
+                android:id="@+id/localisationEng"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/localisation_eng" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/weatherParameterLinear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/localisationLinear">
+
+        <TextView
+            android:id="@+id/weatherParameterText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/weather_parameter_text" />
+
+        <RadioGroup
+            android:id="@+id/weatherParameter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/celsius"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/weather_at_celsius" />
+
+            <RadioButton
+                android:id="@+id/kelvin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/weather_at_kelvin" />
+
+            <RadioButton
+                android:id="@+id/fahrenheit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/weather_at_fahrenheit" />
+
+        </RadioGroup>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/back_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
