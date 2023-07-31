@@ -2,15 +2,15 @@
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_land"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:context=".view.MainActivity">
 
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/cities"
-        android:name="com.gb.androidapponjava.view.ChoosingCityFrag"
+        android:name="com.gb.androidapponjava.view.ChoosingCityFragment"
         android:layout_width="0px"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -19,7 +19,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/weather"
-        android:name="com.gb.androidapponjava.view.ShowWeatherFrag"
+        android:name="com.gb.androidapponjava.view.ShowWeatherFragment"
         android:layout_width="0px"
         android:layout_height="match_parent"
         android:layout_weight="1"

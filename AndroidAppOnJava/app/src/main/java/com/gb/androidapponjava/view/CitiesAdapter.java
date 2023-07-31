@@ -1,30 +1,35 @@
 package com.gb.androidapponjava.view;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.gb.androidapponjava.R;
+import com.gb.androidapponjava.databinding.ItemCityListBinding;
 
 import java.util.List;
 
 class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> {
 
     private List<String> cities;
-    private static OnItemClickListener onItemClickListener;
+    private final OnItemClickListener onItemClickListener;
 
-    public void setCities(List<String> cities) {
+    public CitiesAdapter(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public void updateCitiesList(List<String> cities) {
         this.cities = cities;
     }
 
     @NonNull
     @Override
     public CityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new CityViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_city_list, parent, false));
+        return new CityViewHolder(ItemCityListBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false)
+                , this.onItemClickListener
+        );
     }
 
     @Override
@@ -39,36 +44,26 @@ class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.CityViewHolder> {
         } else return 0;
     }
 
-    static class CityViewHolder extends RecyclerView.ViewHolder {
+    public static class CityViewHolder extends RecyclerView.ViewHolder {
+        private final ItemCityListBinding binding;
 
-        private final TextView textView;
-
-        public CityViewHolder(@NonNull View itemView) {
-            super(itemView);
-            textView = itemView.findViewById(R.id.cityTextView);
-
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (onItemClickListener != null) {
-                        onItemClickListener.onCityTextClick(view, getAdapterPosition());
-                    }
+        public CityViewHolder(ItemCityListBinding binding, OnItemClickListener onItemClickListener) {
+            super(binding.getRoot());
+            this.binding = binding;
+            binding.cityTextView.setOnClickListener(view-> {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onCityTextClick(getAdapterPosition());
                 }
             });
         }
 
-
         void bind(String city) {
-            textView.setText(city);
+            binding.cityTextView.setText(city);
         }
     }
 
     public interface OnItemClickListener {
-        void onCityTextClick(View view, int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
+        void onCityTextClick(int position);
     }
 }
 
