@@ -7,22 +7,22 @@
     android:orientation="horizontal"
     tools:context=".view.MainActivity">
 
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/cities"
+            android:name="com.gb.androidapponjava.view.ChoosingCityFragment"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:layout="@layout/fragment_choose_city" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/cities"
-        android:name="com.gb.androidapponjava.view.ChoosingCityFragment"
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        tools:layout="@layout/fragment_choose_city" />
-
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/weather"
-        android:name="com.gb.androidapponjava.view.ShowWeatherFragment"
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        tools:layout="@layout/fragment_weather"/>
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/weather"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:layout="@layout/fragment_weather"
+            app:navGraph="@navigation/nav_graph_land"
+            app:defaultNavHost="true"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

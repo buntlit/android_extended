@@ -34,6 +34,7 @@ public class DataViewModel extends AndroidViewModel {
     MutableLiveData<Model> liveDataCities;
     MutableLiveData<Model> liveDataCheckBoxes;
     MutableLiveData<Model> liveDataSettings;
+    MutableLiveData<Model> liveDataWeatherHistory;
 
     public DataViewModel(@NonNull Application application) {
         super(application);
@@ -63,18 +64,30 @@ public class DataViewModel extends AndroidViewModel {
         return liveDataSettings;
     }
 
-    public Model createCitiesModel() {
+    public MutableLiveData<Model> getLiveDataWeatherHistory() {
+        if (liveDataWeatherHistory == null) {
+            liveDataWeatherHistory = new MutableLiveData<>();
+            liveDataWeatherHistory.setValue(createWeatherHistoryModel());
+        }
+        return liveDataWeatherHistory;
+    }
+
+    private Model createCitiesModel() {
         Context context = getApplication();
         List<String> cities = new ArrayList<>(Arrays.asList(context.getResources().getStringArray(R.array.cities)));
         return new Model(cities.get(0), cities);
     }
 
-    public Model createCheckBoxesData() {
+    private Model createCheckBoxesData() {
         return new Model(false, false, false);
     }
 
-    public Model createSettingsModel() {
+    private Model createSettingsModel() {
         return new Model(new Model.WeatherParameter(ConstantsStrings.CELSIUS_STRING, ConstantsStrings.CELSIUS_ATTRIBUTE));
+    }
+
+    private Model createWeatherHistoryModel() {
+        return new Model(new ArrayList<>());
     }
 
     public ForecastAnswer getWeather() {
@@ -125,6 +138,10 @@ public class DataViewModel extends AndroidViewModel {
 
     private Model getSettingsModel() {
         return liveDataSettings.getValue();
+    }
+
+    private Model getWeatherHistoryModel() {
+        return liveDataWeatherHistory.getValue();
     }
 
     public List<String> getListCities() {
@@ -179,8 +196,8 @@ public class DataViewModel extends AndroidViewModel {
     }
 
     public void saveWeatherParameter(String stringWeatherParameter, String weatherAttribute) {
-        getSettingsModel().getWeatherParameter().setStringWeatherParameter(stringWeatherParameter);
-        getSettingsModel().getWeatherParameter().setWeatherAttribute(weatherAttribute);
+        getWeatherParameter().setStringWeatherParameter(stringWeatherParameter);
+        getWeatherParameter().setWeatherAttribute(weatherAttribute);
     }
 
     public void changeCitiesLocale(String region) {
@@ -199,4 +216,37 @@ public class DataViewModel extends AndroidViewModel {
         getCitiesModel().setCities(cities);
         saveCitiesData(getListCities().get(position), false);
     }
+
+    public List<String> getWeatherHistoryList() {
+        return getWeatherHistoryModel().getWeatherHistoryList();
+    }
+
+    private void setLiveDataWeatherHistory(List<String> weatherHistoryList) {
+        getWeatherHistoryModel().setWeatherHistoryList(weatherHistoryList);
+    }
+
+    public void addWeatherHistory(String city, String value) {
+        String weatherHistoryString = city + " " + value;
+        List<String> weatherHistoryList = getWeatherHistoryList();
+        if (!weatherHistoryList.contains(weatherHistoryString)) {
+            weatherHistoryList.add(weatherHistoryString);
+            setLiveDataWeatherHistory(weatherHistoryList);
+        }
+    }
+
+    public void clearCitiesData() {
+        liveDataCities.setValue(createCitiesModel());
+    }
+
+    public void clearHistoryWeatherData(){
+        liveDataWeatherHistory.setValue(createWeatherHistoryModel());
+    }
+
+    public void clearAllData(){
+        liveDataCities.setValue(createCitiesModel());
+        liveDataCheckBoxes.setValue(createCheckBoxesData());
+        liveDataSettings.setValue(createSettingsModel());
+        liveDataWeatherHistory.setValue(createWeatherHistoryModel());
+    }
+
 }

@@ -4,6 +4,7 @@
     <string name="choosing_city_name">Выбор города</string>
     <string name="weather">Погода</string>
     <string name="settings">Настройки</string>
+    <string name="weather_history">Погодная история</string>
     <string name="city1">Москва</string>
     <string name="enter_city">Введите город</string>
     <string name="humidity">Влажность</string>
@@ -21,4 +22,8 @@
     <string name="weather_at_kelvin">Кельвины</string>
     <string name="weather_at_fahrenheit">Фаренгейты</string>
     <string name="back_button">Назад</string>
+    <string name="clear_cities_data">Очистить города</string>
+    <string name="clear_weather_history_data">Очистить историю</string>
+    <string name="clear_all_data">Очистить всё</string>
+    <string name="header_title">Боковое меню</string>
 </resources>

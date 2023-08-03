@@ -12,8 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.databinding.FragmentSettingsBinding;
@@ -21,14 +21,14 @@ import com.gb.androidapponjava.modules.ConstantsStrings;
 import com.gb.androidapponjava.viewmodel.DataViewModel;
 
 public class SettingsFragment extends Fragment {
-    private DataViewModel dataViewModel;
+    private DataViewModel viewModel;
     private FragmentSettingsBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = inflate(inflater, container, false);
-        dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
         initView();
         return binding.getRoot();
     }
@@ -36,9 +36,12 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        dataViewModel.getLiveDataCities().observe(getViewLifecycleOwner(), model -> {});
-        dataViewModel.getLiveDataCheckBoxes().observe(getViewLifecycleOwner(), model -> {});
-        dataViewModel.getLiveDataSettings().observe(getViewLifecycleOwner(), model -> {});
+        viewModel.getLiveDataCities().observe(getViewLifecycleOwner(), model -> {
+        });
+        viewModel.getLiveDataCheckBoxes().observe(getViewLifecycleOwner(), model -> {
+        });
+        viewModel.getLiveDataSettings().observe(getViewLifecycleOwner(), model -> {
+        });
         handleViews();
     }
 
@@ -54,13 +57,9 @@ public class SettingsFragment extends Fragment {
                 setDarkTheme(b)
         );
 
-        binding.buttonBack.setOnClickListener(view ->
-                requireActivity().getSupportFragmentManager().
-                        popBackStack(
-                                ConstantsStrings.BACK_STACK_SHOW_WEATHER_FRAGMENT,
-                                FragmentManager.POP_BACK_STACK_INCLUSIVE
-                        )
-        );
+        binding.buttonBack.setOnClickListener(view -> {
+            Navigation.findNavController(requireView()).popBackStack();
+        });
 
         binding.localisation.setOnCheckedChangeListener((radioGroup, indexRadioButton) ->
                 processingSwitchLocalisation(indexRadioButton)
@@ -106,11 +105,11 @@ public class SettingsFragment extends Fragment {
                 break;
         }
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(locale));
-        dataViewModel.changeCitiesLocale(locale);
+        viewModel.changeCitiesLocale(locale);
     }
 
     private void setSwitchWeatherParameter() {
-        switch (dataViewModel.getStringWeatherParameter()) {
+        switch (viewModel.getStringWeatherParameter()) {
             case (ConstantsStrings.CELSIUS_STRING):
                 binding.weatherParameter.check(R.id.celsius);
                 break;
@@ -140,7 +139,7 @@ public class SettingsFragment extends Fragment {
                 weatherAttribute = ConstantsStrings.FAHRENHEIT_ATTRIBUTE;
                 break;
         }
-        dataViewModel.saveWeatherParameter(stringWeatherParameter, weatherAttribute);
+        viewModel.saveWeatherParameter(stringWeatherParameter, weatherAttribute);
     }
 
 }

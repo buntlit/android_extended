@@ -13,18 +13,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.databinding.FragmentWeatherBinding;
-import com.gb.androidapponjava.modules.ConstantsStrings;
 import com.gb.androidapponjava.modules.ForecastAnswer;
 import com.gb.androidapponjava.viewmodel.DataViewModel;
 
 public class ShowWeatherFragment extends Fragment {
 
-    private DataViewModel dataViewModel;
+    private DataViewModel viewModel;
     private FragmentWeatherBinding binding;
     private ForecastAnswer answer;
 
@@ -32,7 +31,7 @@ public class ShowWeatherFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = inflate(inflater, container, false);
-        dataViewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity()).get(DataViewModel.class);
         requireActivity().setTitle(R.string.weather);
         return binding.getRoot();
     }
@@ -41,38 +40,43 @@ public class ShowWeatherFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        dataViewModel.getLiveDataCities().observe(getViewLifecycleOwner(), model ->
+        viewModel.getLiveDataCities().observe(getViewLifecycleOwner(), model ->
                 setWeather()
         );
-        dataViewModel.getLiveDataCheckBoxes().observe(getViewLifecycleOwner(), model ->
+        viewModel.getLiveDataCheckBoxes().observe(getViewLifecycleOwner(), model ->
                 showExtras()
         );
-        dataViewModel.getLiveDataSettings().observe(getViewLifecycleOwner(), model -> {});
+        viewModel.getLiveDataSettings().observe(getViewLifecycleOwner(), model -> {
+        });
         handleViews();
     }
 
     private void setWeather() {
-        answer = dataViewModel.getWeather();
-        binding.city.setText(dataViewModel.getCityName());
+        answer = viewModel.getWeather();
+        binding.city.setText(viewModel.getCityName());
         binding.temperatureValue.setText(answer.getTemperature() + answer.getWeatherAttribute());
         binding.humidityValue.setText(String.valueOf(answer.getHumidity()));
         binding.pressureValue.setText(String.valueOf(answer.getPressure()));
         binding.windSpeedValue.setText(String.valueOf(answer.getWindSpeed()));
+        viewModel.addWeatherHistory(
+                (String) binding.city.getText(),
+                (String) binding.temperatureValue.getText()
+        );
     }
 
     private void showExtras() {
         showBackButton();
-        if (dataViewModel.isHumidityCheckBoxPressed()) {
+        if (viewModel.isHumidityCheckBoxPressed()) {
             binding.humidityLinear.setVisibility(View.VISIBLE);
         } else {
             binding.humidityLinear.setVisibility(View.GONE);
         }
-        if (dataViewModel.isPressureCheckBoxPressed()) {
+        if (viewModel.isPressureCheckBoxPressed()) {
             binding.pressureLinear.setVisibility(View.VISIBLE);
         } else {
             binding.pressureLinear.setVisibility(View.GONE);
         }
-        if (dataViewModel.isWindSpeedCheckBoxPressed()) {
+        if (viewModel.isWindSpeedCheckBoxPressed()) {
             binding.windSpeedLinear.setVisibility(View.VISIBLE);
         } else {
             binding.windSpeedLinear.setVisibility(View.GONE);
@@ -89,7 +93,7 @@ public class ShowWeatherFragment extends Fragment {
         );
 
         binding.buttonBackToChoose.setOnClickListener(view ->
-                requireActivity().getSupportFragmentManager().popBackStack()
+                Navigation.findNavController(requireView()).popBackStack()
         );
     }
 
@@ -102,17 +106,7 @@ public class ShowWeatherFragment extends Fragment {
     }
 
     private void startSettingsFragment() {
-        Fragment settingsFragment;
-        try {
-            settingsFragment = SettingsFragment.class.newInstance();
-        } catch (IllegalAccessException | java.lang.InstantiationException e) {
-            throw new RuntimeException(e);
-        }
-
-        FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
-        fragmentTransaction.replace(getId(), settingsFragment)
-                .addToBackStack(ConstantsStrings.BACK_STACK_SHOW_WEATHER_FRAGMENT);
-        fragmentTransaction.commit();
+        Navigation.findNavController(requireView()).navigate(R.id.settingsFragment);
     }
 
     private void startBrowserWithWeather() {

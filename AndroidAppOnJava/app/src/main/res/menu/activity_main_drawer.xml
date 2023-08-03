@@ -3,12 +3,13 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/menu_weather"
-            android:title="@string/show_weather_button" />
+            android:title="@string/show_weather_button"
+            android:checked="true"/>
         <item
             android:id="@+id/menu_settings"
             android:title="@string/settings" />
         <item
             android:id="@+id/menu_history"
-            android:title="@string/humidity" />
+            android:title="@string/weather_history" />
     </group>
 </menu>

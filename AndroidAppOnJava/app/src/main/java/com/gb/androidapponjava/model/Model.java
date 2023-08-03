@@ -12,7 +12,7 @@ public class Model {
 
     private WeatherParameter weatherParameter;
 
-    public static class WeatherParameter{
+    public static class WeatherParameter {
         private String stringWeatherParameter;
         private String weatherAttribute;
 
@@ -38,6 +38,8 @@ public class Model {
         }
     }
 
+    public List<String> weatherHistoryList;
+
     public Model(String cityName, List<String> cities) {
         this.cityName = cityName;
         this.cities = cities;
@@ -53,18 +55,26 @@ public class Model {
         this.weatherParameter = weatherParameter;
     }
 
+    public Model(List<String> weatherHistoryList) {
+        this.weatherHistoryList = weatherHistoryList;
+    }
+
     public String getCityName() {
         return cityName;
     }
+
     public void setCityName(String cityName) {
         this.cityName = cityName;
     }
+
     public List<String> getCities() {
         return cities;
     }
+
     public void setCities(List<String> cities) {
         this.cities = cities;
     }
+
     public boolean isCheckBoxHumidity() {
         return isCheckBoxHumidity;
     }
@@ -72,19 +82,32 @@ public class Model {
     public void setCheckBoxHumidity(boolean checkBoxHumidity) {
         isCheckBoxHumidity = checkBoxHumidity;
     }
+
     public boolean isCheckBoxPressure() {
         return isCheckBoxPressure;
     }
+
     public void setCheckBoxPressure(boolean checkBoxPressure) {
         isCheckBoxPressure = checkBoxPressure;
     }
+
     public boolean isCheckBoxWindSpeed() {
         return isCheckBoxWindSpeed;
     }
+
     public void setCheckBoxWindSpeed(boolean checkBoxWindSpeed) {
         isCheckBoxWindSpeed = checkBoxWindSpeed;
     }
+
     public WeatherParameter getWeatherParameter() {
         return weatherParameter;
+    }
+
+    public List<String> getWeatherHistoryList() {
+        return weatherHistoryList;
+    }
+
+    public void setWeatherHistoryList(List<String> weatherHistoryList) {
+        this.weatherHistoryList = weatherHistoryList;
     }
 }
