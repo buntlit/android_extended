@@ -7,14 +7,19 @@ public class ForecastAnswer {
     private final float pressure;
     private final float windSpeed;
     private final String weatherAttribute;
+    private final boolean isResponse;
+    private final int responseCode;
 
-    public ForecastAnswer(int cityIndex, float temperature, float humidity, float pressure, float windSpeed, String weatherAttribute) {
+    public ForecastAnswer(int cityIndex, float temperature, float humidity, float pressure,
+                          float windSpeed, String weatherAttribute, boolean isResponse, int responseCode) {
         this.cityIndex = cityIndex;
         this.temperature = temperature;
         this.humidity = humidity;
         this.pressure = pressure;
         this.windSpeed = windSpeed;
         this.weatherAttribute = weatherAttribute;
+        this.isResponse = isResponse;
+        this.responseCode = responseCode;
     }
 
     public int getCityIndex() {
@@ -39,5 +44,13 @@ public class ForecastAnswer {
 
     public String getWeatherAttribute() {
         return weatherAttribute;
+    }
+
+    public boolean isResponse() {
+        return isResponse;
+    }
+
+    public int getResponseCode() {
+        return responseCode;
     }
 }

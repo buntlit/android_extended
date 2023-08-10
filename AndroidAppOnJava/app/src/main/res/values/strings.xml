@@ -4,15 +4,10 @@
     <string name="weather">Weather</string>
     <string name="settings">Settings</string>
     <string name="weather_history">Weather history</string>
-    <string name="city1">Moscow</string>
     <string name="enter_city">Enter city</string>
-    <string name="temperature" translatable="false">-2</string>
     <string name="humidity">Humidity</string>
     <string name="pressure">Pressure</string>
     <string name="wind_speed">Wind Speed</string>
-    <string name="humidity_value" translatable="false">88</string>
-    <string name="pressure_value" translatable="false">749</string>
-    <string name="wind_speed_value" translatable="false">6.4</string>
     <string name="show_weather_button">Show weather</string>
     <string name="settings_button">Settings</string>
     <string name="show_weather_on_internet">Show weather on Internet</string>
@@ -29,4 +24,10 @@
     <string name="clear_weather_history_data">Clear weather history data</string>
     <string name="clear_all_data">Clear all data</string>
     <string name="header_title">Navigation Drawer menu</string>
+    <string name="alert_dialog_title">WARNING</string>
+    <string name="internet_error">No Internet connection</string>
+    <string name="cancel_dialog_button">Cancel</string>
+    <string name="go_to_internet_settings">Go to Internet settings</string>
+    <string name="server_error">No connection to server\nError: </string>
+    <string name="show_default">Show default weather</string>
 </resources>

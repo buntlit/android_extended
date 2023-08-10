@@ -2,8 +2,10 @@ package com.gb.androidapponjava.view;
 
 import static com.gb.androidapponjava.databinding.FragmentChooseCityBinding.inflate;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -79,7 +82,19 @@ public class ChoosingCityFragment extends Fragment implements CitiesAdapter.OnIt
     }
 
     private void startShowWeatherFragment() {
-        Navigation.findNavController(requireView()).navigate(R.id.showWeatherFragment);
+        if (viewModel.getWeather() == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle(R.string.alert_dialog_title).setMessage(R.string.internet_error)
+                    .setCancelable(false)
+                    .setNegativeButton(R.string.cancel_dialog_button, (dialogInterface, i) -> {
+                            }
+                    )
+                    .setPositiveButton(R.string.go_to_internet_settings, (dialogInterface, i) ->
+                            startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
+                    .show();
+        } else {
+            Navigation.findNavController(requireView()).navigate(R.id.showWeatherFragment);
+        }
     }
 
     private void processingShowWeatherButton() {

@@ -11,7 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.model.Model;
-import com.gb.androidapponjava.modules.ConstantsStrings;
+import com.gb.androidapponjava.modules.Constants;
 import com.gb.androidapponjava.modules.ForecastAnswer;
 import com.gb.androidapponjava.modules.WeatherRequest;
 import com.google.gson.Gson;
@@ -83,7 +83,7 @@ public class DataViewModel extends AndroidViewModel {
     }
 
     private Model createSettingsModel() {
-        return new Model(new Model.WeatherParameter(ConstantsStrings.CELSIUS_STRING, ConstantsStrings.CELSIUS_ATTRIBUTE));
+        return new Model(new Model.WeatherParameter(Constants.CELSIUS_STRING, Constants.CELSIUS_ATTRIBUTE));
     }
 
     private Model createWeatherHistoryModel() {
@@ -105,13 +105,20 @@ public class DataViewModel extends AndroidViewModel {
                     urlConnection = (HttpsURLConnection) uri.openConnection();
                     urlConnection.setRequestMethod(REQUEST_METHOD);
                     urlConnection.setReadTimeout(TIMEOUT);
-                    BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                    String result = in.lines().collect(Collectors.joining("\n"));
-                    Gson gson = new Gson();
-                    final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
-                    answer[0] = new ForecastAnswer(weatherRequest.getId(), weatherRequest.getMain().getTemp(),
-                            weatherRequest.getMain().getHumidity(), weatherRequest.getMain().getPressure(),
-                            weatherRequest.getWind().getSpeed(), getAttribute());
+                    int responseCode = urlConnection.getResponseCode();
+                    if (responseCode >= 200 && responseCode <= 300) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                        String result = in.lines().collect(Collectors.joining("\n"));
+                        Gson gson = new Gson();
+                        final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
+                        answer[0] = new ForecastAnswer(weatherRequest.getId(), weatherRequest.getMain().getTemp(),
+                                weatherRequest.getMain().getHumidity(), weatherRequest.getMain().getPressure(),
+                                weatherRequest.getWind().getSpeed(), getAttribute(), true, responseCode);
+                    } else {
+                        answer[0] = new ForecastAnswer(Constants.DEFAULT_CITY_INDEX, Constants.DEFAULT_TEMPERATURE,
+                                Constants.DEFAULT_HUMIDITY, Constants.DEFAULT_PRESSURE,
+                                Constants.DEFAULT_WIND_SPEED, getAttribute(), false, responseCode);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -238,11 +245,11 @@ public class DataViewModel extends AndroidViewModel {
         liveDataCities.setValue(createCitiesModel());
     }
 
-    public void clearHistoryWeatherData(){
+    public void clearHistoryWeatherData() {
         liveDataWeatherHistory.setValue(createWeatherHistoryModel());
     }
 
-    public void clearAllData(){
+    public void clearAllData() {
         liveDataCities.setValue(createCitiesModel());
         liveDataCheckBoxes.setValue(createCheckBoxesData());
         liveDataSettings.setValue(createSettingsModel());

@@ -17,7 +17,7 @@ import androidx.navigation.Navigation;
 
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.databinding.FragmentSettingsBinding;
-import com.gb.androidapponjava.modules.ConstantsStrings;
+import com.gb.androidapponjava.modules.Constants;
 import com.gb.androidapponjava.viewmodel.DataViewModel;
 
 public class SettingsFragment extends Fragment {
@@ -87,7 +87,7 @@ public class SettingsFragment extends Fragment {
 
     private void setSwitchLocalisation() {
         if (requireContext().getResources().getConfiguration().getLocales().get(0).getLanguage()
-                .equals(ConstantsStrings.LOCAL_RUS)) {
+                .equals(Constants.LOCAL_RUS)) {
             binding.localisation.check(R.id.localisationRus);
         } else {
             binding.localisation.check(R.id.localisationEng);
@@ -98,10 +98,10 @@ public class SettingsFragment extends Fragment {
         String locale = "";
         switch (indexRadioButton) {
             case (R.id.localisationRus):
-                locale = ConstantsStrings.LOCAL_RUS;
+                locale = Constants.LOCAL_RUS;
                 break;
             case (R.id.localisationEng):
-                locale = ConstantsStrings.LOCAL_ENG;
+                locale = Constants.LOCAL_ENG;
                 break;
         }
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(locale));
@@ -110,13 +110,13 @@ public class SettingsFragment extends Fragment {
 
     private void setSwitchWeatherParameter() {
         switch (viewModel.getStringWeatherParameter()) {
-            case (ConstantsStrings.CELSIUS_STRING):
+            case (Constants.CELSIUS_STRING):
                 binding.weatherParameter.check(R.id.celsius);
                 break;
-            case (ConstantsStrings.KELVIN_STRING):
+            case (Constants.KELVIN_STRING):
                 binding.weatherParameter.check(R.id.kelvin);
                 break;
-            case (ConstantsStrings.FAHRENHEIT_STRING):
+            case (Constants.FAHRENHEIT_STRING):
                 binding.weatherParameter.check(R.id.fahrenheit);
                 break;
         }
@@ -127,16 +127,16 @@ public class SettingsFragment extends Fragment {
         String weatherAttribute = "";
         switch (indexRadioButton) {
             case (R.id.celsius):
-                stringWeatherParameter = ConstantsStrings.CELSIUS_STRING;
-                weatherAttribute = ConstantsStrings.CELSIUS_ATTRIBUTE;
+                stringWeatherParameter = Constants.CELSIUS_STRING;
+                weatherAttribute = Constants.CELSIUS_ATTRIBUTE;
                 break;
             case (R.id.kelvin):
-                stringWeatherParameter = ConstantsStrings.KELVIN_STRING;
-                weatherAttribute = ConstantsStrings.KELVIN_ATTRIBUTE;
+                stringWeatherParameter = Constants.KELVIN_STRING;
+                weatherAttribute = Constants.KELVIN_ATTRIBUTE;
                 break;
             case (R.id.fahrenheit):
-                stringWeatherParameter = ConstantsStrings.FAHRENHEIT_STRING;
-                weatherAttribute = ConstantsStrings.FAHRENHEIT_ATTRIBUTE;
+                stringWeatherParameter = Constants.FAHRENHEIT_STRING;
+                weatherAttribute = Constants.FAHRENHEIT_ATTRIBUTE;
                 break;
         }
         viewModel.saveWeatherParameter(stringWeatherParameter, weatherAttribute);
