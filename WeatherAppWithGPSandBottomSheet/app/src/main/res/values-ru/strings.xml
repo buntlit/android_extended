@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Погода</string>
+    <string name="humidity">Влажность</string>
+    <string name="feels">Ощущается как</string>
+    <string name="wind_speed">Скоорость ветра</string>
+    <string name="choose_weather_location_button">Выбор места</string>
+    <string name="city1">Москва</string>
+    <string name="city2">Лондон</string>
+    <string name="city3">Берлин</string>
+    <string name="city4">Токио</string>
+</resources>

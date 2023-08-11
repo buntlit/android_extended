@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Weather App</string>
+    <string name="humidity">Humidity</string>
+    <string name="feels">Fells like</string>
+    <string name="wind_speed">Wind speed</string>
+    <string name="choose_weather_location_button">Choose weather location</string>
+    <string name="gps" translatable="false">GPS</string>
+    <string name="city1">Moscow</string>
+    <string name="city2">London</string>
+    <string name="city3">Berlin</string>
+    <string name="city4">Tokyo</string>
+</resources>
