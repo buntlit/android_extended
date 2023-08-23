@@ -12,22 +12,11 @@ import androidx.lifecycle.MutableLiveData;
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.model.Model;
 import com.gb.androidapponjava.modules.Constants;
-import com.gb.androidapponjava.modules.ForecastAnswer;
-import com.gb.androidapponjava.modules.WeatherRequest;
-import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class DataViewModel extends AndroidViewModel {
 
@@ -88,51 +77,6 @@ public class DataViewModel extends AndroidViewModel {
 
     private Model createWeatherHistoryModel() {
         return new Model(new ArrayList<>());
-    }
-
-    public ForecastAnswer getWeather() {
-        final String URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s%s";
-        final String API_KEY = "2f0e5b22131acf399237f29d84fdcfeb";
-        final String REQUEST_METHOD = "GET";
-        final int TIMEOUT = 10000;
-        final ForecastAnswer[] answer = new ForecastAnswer[1];
-
-        try {
-            final java.net.URL uri = new URL(String.format(URL, getCityName(), API_KEY, getStringWeatherParameter()));
-            Thread thread = new Thread(() -> {
-                HttpsURLConnection urlConnection = null;
-                try {
-                    urlConnection = (HttpsURLConnection) uri.openConnection();
-                    urlConnection.setRequestMethod(REQUEST_METHOD);
-                    urlConnection.setReadTimeout(TIMEOUT);
-                    int responseCode = urlConnection.getResponseCode();
-                    if (responseCode >= 200 && responseCode <= 300) {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                        String result = in.lines().collect(Collectors.joining("\n"));
-                        Gson gson = new Gson();
-                        final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
-                        answer[0] = new ForecastAnswer(weatherRequest.getId(), weatherRequest.getMain().getTemp(),
-                                weatherRequest.getMain().getHumidity(), weatherRequest.getMain().getPressure(),
-                                weatherRequest.getWind().getSpeed(), getAttribute(), true, responseCode);
-                    } else {
-                        answer[0] = new ForecastAnswer(Constants.DEFAULT_CITY_INDEX, Constants.DEFAULT_TEMPERATURE,
-                                Constants.DEFAULT_HUMIDITY, Constants.DEFAULT_PRESSURE,
-                                Constants.DEFAULT_WIND_SPEED, getAttribute(), false, responseCode);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (urlConnection != null) {
-                        urlConnection.disconnect();
-                    }
-                }
-            });
-            thread.start();
-            thread.join();
-        } catch (MalformedURLException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return answer[0];
     }
 
     private Model getCitiesModel() {
