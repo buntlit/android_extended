@@ -24,4 +24,7 @@
     <string name="weather_at_kelvin">Kelvin</string>
     <string name="weather_at_fahrenheit">Fahrenheit</string>
     <string name="back_button">Back</string>
+
+    <string translatable="false" name="test_res"> %1$f %2$s</string>
+
 </resources>

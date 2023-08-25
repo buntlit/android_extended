@@ -4,12 +4,14 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.gb.androidapponjava.R;
+import com.gb.androidapponjava.model.CitiesModel;
 import com.gb.androidapponjava.model.Model;
 import com.gb.androidapponjava.modules.ConstantsStrings;
 import com.gb.androidapponjava.modules.ForecastAnswer;
@@ -31,42 +33,47 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class DataViewModel extends AndroidViewModel {
 
-    MutableLiveData<Model> liveDataCities;
-    MutableLiveData<Model> liveDataCheckBoxes;
-    MutableLiveData<Model> liveDataSettings;
+    private final MutableLiveData<CitiesModel> liveDataCities;
+    private final MutableLiveData<Model> liveDataCheckBoxes;
+    private final MutableLiveData<Model> liveDataSettings;
+    private final MutableLiveData<ForecastAnswer> forecastLiveData;
+    private final MutableLiveData<Uri> toBrowserEvent;
+
 
     public DataViewModel(@NonNull Application application) {
         super(application);
+        liveDataCities = new MutableLiveData<>(createCitiesModel());
+        liveDataCheckBoxes = new MutableLiveData<>(createCheckBoxesData());
+        liveDataSettings = new MutableLiveData<>(createSettingsModel());
+        forecastLiveData = new MutableLiveData<>();
+        toBrowserEvent = new MutableLiveData<>();
+        loadWeather();
     }
 
-    public MutableLiveData<Model> getLiveDataCities() {
-        if (liveDataCities == null) {
-            liveDataCities = new MutableLiveData<>();
-            liveDataCities.setValue(createCitiesModel());
-        }
+    public MutableLiveData<CitiesModel> getCitiesLiveData() {
         return liveDataCities;
     }
 
+    public MutableLiveData<Uri> getToBrowserEventLiveData() {
+        return toBrowserEvent;
+    }
+
+    public MutableLiveData<ForecastAnswer> getForecastLiveData() {
+        return forecastLiveData;
+    }
+
     public MutableLiveData<Model> getLiveDataCheckBoxes() {
-        if (liveDataCheckBoxes == null) {
-            liveDataCheckBoxes = new MutableLiveData<>();
-            liveDataCheckBoxes.setValue(createCheckBoxesData());
-        }
         return liveDataCheckBoxes;
     }
 
     public MutableLiveData<Model> getLiveDataSettings() {
-        if (liveDataSettings == null) {
-            liveDataSettings = new MutableLiveData<>();
-            liveDataSettings.setValue(createSettingsModel());
-        }
         return liveDataSettings;
     }
 
-    public Model createCitiesModel() {
+    public CitiesModel createCitiesModel() {
         Context context = getApplication();
         List<String> cities = new ArrayList<>(Arrays.asList(context.getResources().getStringArray(R.array.cities)));
-        return new Model(cities.get(0), cities);
+        return new CitiesModel(cities.get(0), cities);
     }
 
     public Model createCheckBoxesData() {
@@ -77,13 +84,11 @@ public class DataViewModel extends AndroidViewModel {
         return new Model(new Model.WeatherParameter(ConstantsStrings.CELSIUS_STRING, ConstantsStrings.CELSIUS_ATTRIBUTE));
     }
 
-    public ForecastAnswer getWeather() {
+    public void loadWeather() {
         final String URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s%s";
         final String API_KEY = "2f0e5b22131acf399237f29d84fdcfeb";
         final String REQUEST_METHOD = "GET";
         final int TIMEOUT = 10000;
-        final ForecastAnswer[] answer = new ForecastAnswer[1];
-
         try {
             final java.net.URL uri = new URL(String.format(URL, getCityName(), API_KEY, getStringWeatherParameter()));
             Thread thread = new Thread(() -> {
@@ -96,9 +101,15 @@ public class DataViewModel extends AndroidViewModel {
                     String result = in.lines().collect(Collectors.joining("\n"));
                     Gson gson = new Gson();
                     final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
-                    answer[0] = new ForecastAnswer(weatherRequest.getId(), weatherRequest.getMain().getTemp(),
-                            weatherRequest.getMain().getHumidity(), weatherRequest.getMain().getPressure(),
-                            weatherRequest.getWind().getSpeed(), getAttribute());
+
+                    forecastLiveData.postValue(new ForecastAnswer(
+                            weatherRequest.getId(),
+                            weatherRequest.getMain().getTemp(),
+                            weatherRequest.getMain().getHumidity(),
+                            weatherRequest.getMain().getPressure(),
+                            weatherRequest.getWind().getSpeed(),
+                            getAttribute()
+                    ));
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
@@ -112,10 +123,9 @@ public class DataViewModel extends AndroidViewModel {
         } catch (MalformedURLException | InterruptedException e) {
             e.printStackTrace();
         }
-        return answer[0];
     }
 
-    private Model getCitiesModel() {
+    private CitiesModel getCitiesModel() {
         return liveDataCities.getValue();
     }
 
@@ -135,15 +145,13 @@ public class DataViewModel extends AndroidViewModel {
         return getCitiesModel().getCityName();
     }
 
-    public void saveCitiesData(String cityName, boolean isAddingNewCity) {
-        Model cityModel = getCitiesModel();
+    public void saveCitiesData(String newCityName, boolean isAddingNewCity) {
+        CitiesModel cityModel = getCitiesModel();
+        List<String> cities = cityModel.getCities();
         if (isAddingNewCity) {
-            List<String> citiesList = getListCities();
-            citiesList.add(cityName);
-            cityModel.setCities(citiesList);
+            cities.add(newCityName);
         }
-        cityModel.setCityName(cityName);
-        liveDataCities.setValue(cityModel);
+        liveDataCities.setValue(new CitiesModel(newCityName, cities));
     }
 
     public boolean isHumidityCheckBoxPressed() {
@@ -196,7 +204,17 @@ public class DataViewModel extends AndroidViewModel {
                 cities.add(getListCities().get(i));
             }
         }
-        getCitiesModel().setCities(cities);
+//        getCitiesModel().setCities(cities);
         saveCitiesData(getListCities().get(position), false);
+    }
+
+    public void onIntenetWeatherClick() {
+        ForecastAnswer forecastAnswer = forecastLiveData.getValue();
+        if (forecastAnswer == null) return;
+        int cityIndex = forecastLiveData.getValue().getCityIndex();
+
+        final String address = "https://openweathermap.org/city/";
+        Uri uri = Uri.parse(address + cityIndex);
+        toBrowserEvent.postValue(uri);
     }
 }
