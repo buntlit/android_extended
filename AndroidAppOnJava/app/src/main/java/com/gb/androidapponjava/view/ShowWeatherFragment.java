@@ -26,7 +26,6 @@ public class ShowWeatherFragment extends Fragment {
 
     private DataViewModel dataViewModel;
     private FragmentWeatherBinding binding;
-    private ForecastAnswer answer;
 
     @Nullable
     @Override
@@ -41,23 +40,39 @@ public class ShowWeatherFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        dataViewModel.getLiveDataCities().observe(getViewLifecycleOwner(), model ->
+        dataViewModel.getCitiesLiveData().observe(getViewLifecycleOwner(), model ->
                 setWeather()
         );
         dataViewModel.getLiveDataCheckBoxes().observe(getViewLifecycleOwner(), model ->
                 showExtras()
         );
-        dataViewModel.getLiveDataSettings().observe(getViewLifecycleOwner(), model -> {});
+
+        dataViewModel.getToBrowserEventLiveData().observe(getViewLifecycleOwner(), uri -> {
+            if (uri != null){
+                startActivity(new Intent(Intent.ACTION_VIEW, uri));
+
+            }
+
+        });
+
+        dataViewModel.getForecastLiveData().observe(getViewLifecycleOwner(),  forecastAnswer -> {
+            if (forecastAnswer != null){
+                handleForecast(forecastAnswer);
+            }
+                });
         handleViews();
     }
 
+    private void handleForecast(ForecastAnswer forecastAnswer) {
+        String temperature = getString(R.string.test_res, forecastAnswer.getTemperature(), forecastAnswer.getWeatherAttribute());
+        binding.temperatureValue.setText(temperature);
+        binding.humidityValue.setText(String.valueOf(forecastAnswer.getHumidity()));
+        binding.pressureValue.setText(String.valueOf(forecastAnswer.getPressure()));
+        binding.windSpeedValue.setText(String.valueOf(forecastAnswer.getWindSpeed()));
+    }
+
     private void setWeather() {
-        answer = dataViewModel.getWeather();
         binding.city.setText(dataViewModel.getCityName());
-        binding.temperatureValue.setText(answer.getTemperature() + answer.getWeatherAttribute());
-        binding.humidityValue.setText(String.valueOf(answer.getHumidity()));
-        binding.pressureValue.setText(String.valueOf(answer.getPressure()));
-        binding.windSpeedValue.setText(String.valueOf(answer.getWindSpeed()));
     }
 
     private void showExtras() {
@@ -85,7 +100,7 @@ public class ShowWeatherFragment extends Fragment {
         );
 
         binding.showWeatherOnInternet.setOnClickListener(view ->
-                startBrowserWithWeather()
+                dataViewModel.onIntenetWeatherClick()
         );
 
         binding.buttonBackToChoose.setOnClickListener(view ->
@@ -115,9 +130,5 @@ public class ShowWeatherFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void startBrowserWithWeather() {
-        final String address = "https://openweathermap.org/city/";
-        Uri uri = Uri.parse(address + answer.getCityIndex());
-        startActivity(new Intent(Intent.ACTION_VIEW, uri));
-    }
+
 }
