@@ -1,6 +1,6 @@
-package com.gb.androidapponjava.modules;
+package com.gb.androidapponjava.model;
 
-public class ForecastAnswer {
+public class ForecastAnswerModel {
     private final int cityIndex;
     private final float temperature;
     private final float humidity;
@@ -9,9 +9,11 @@ public class ForecastAnswer {
     private final String weatherAttribute;
     private final boolean isResponse;
     private final int responseCode;
+    private final String iconValue;
 
-    public ForecastAnswer(int cityIndex, float temperature, float humidity, float pressure,
-                          float windSpeed, String weatherAttribute, boolean isResponse, int responseCode) {
+    public ForecastAnswerModel(int cityIndex, float temperature, float humidity, float pressure,
+                               float windSpeed, String weatherAttribute, boolean isResponse,
+                               int responseCode, String iconValue) {
         this.cityIndex = cityIndex;
         this.temperature = temperature;
         this.humidity = humidity;
@@ -20,6 +22,7 @@ public class ForecastAnswer {
         this.weatherAttribute = weatherAttribute;
         this.isResponse = isResponse;
         this.responseCode = responseCode;
+        this.iconValue = iconValue;
     }
 
     public int getCityIndex() {
@@ -52,5 +55,9 @@ public class ForecastAnswer {
 
     public int getResponseCode() {
         return responseCode;
+    }
+
+    public String getIconValue() {
+        return iconValue;
     }
 }

@@ -4,95 +4,114 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.Uri;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
 import com.gb.androidapponjava.R;
-import com.gb.androidapponjava.model.Model;
+import com.gb.androidapponjava.model.CheckBoxesModel;
+import com.gb.androidapponjava.model.CitiesModel;
+import com.gb.androidapponjava.model.ForecastAnswerModel;
+import com.gb.androidapponjava.model.WeatherHistoryModel;
+import com.gb.androidapponjava.model.WeatherParameterModel;
 import com.gb.androidapponjava.modules.Constants;
+import com.gb.androidapponjava.modules.OpenWeather;
+import com.gb.androidapponjava.modules.WeatherRequest;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class DataViewModel extends AndroidViewModel {
 
-    MutableLiveData<Model> liveDataCities;
-    MutableLiveData<Model> liveDataCheckBoxes;
-    MutableLiveData<Model> liveDataSettings;
-    MutableLiveData<Model> liveDataWeatherHistory;
+    private final MutableLiveData<CitiesModel> citiesLiveData;
+    private final MutableLiveData<CheckBoxesModel> checkBoxesLiveData;
+    private final MutableLiveData<WeatherParameterModel> weatherParameterLiveData;
+    private final MutableLiveData<WeatherHistoryModel> weatherHistoryLiveData;
+    private final MutableLiveData<ForecastAnswerModel> forecastAnswerLiveData;
+    private final MutableLiveData<Uri> toBrowserEvent;
+    private OpenWeather openWeather;
 
     public DataViewModel(@NonNull Application application) {
         super(application);
+        citiesLiveData = new MutableLiveData<>(createCitiesModel());
+        checkBoxesLiveData = new MutableLiveData<>(createCheckBoxesData());
+        weatherParameterLiveData = new MutableLiveData<>(createWeatherParameterModel());
+        weatherHistoryLiveData = new MutableLiveData<>(createWeatherHistoryModel());
+        forecastAnswerLiveData = new MutableLiveData<>();
+        toBrowserEvent = new MutableLiveData<>();
+        initRetrofit();
     }
 
-    public MutableLiveData<Model> getLiveDataCities() {
-        if (liveDataCities == null) {
-            liveDataCities = new MutableLiveData<>();
-            liveDataCities.setValue(createCitiesModel());
-        }
-        return liveDataCities;
+    public MutableLiveData<CitiesModel> getCitiesLiveData() {
+        return citiesLiveData;
     }
 
-    public MutableLiveData<Model> getLiveDataCheckBoxes() {
-        if (liveDataCheckBoxes == null) {
-            liveDataCheckBoxes = new MutableLiveData<>();
-            liveDataCheckBoxes.setValue(createCheckBoxesData());
-        }
-        return liveDataCheckBoxes;
+    public MutableLiveData<CheckBoxesModel> getCheckBoxesLiveData() {
+        return checkBoxesLiveData;
     }
 
-    public MutableLiveData<Model> getLiveDataSettings() {
-        if (liveDataSettings == null) {
-            liveDataSettings = new MutableLiveData<>();
-            liveDataSettings.setValue(createSettingsModel());
-        }
-        return liveDataSettings;
+    public MutableLiveData<WeatherParameterModel> getWeatherParameterLiveData() {
+        return weatherParameterLiveData;
     }
 
-    public MutableLiveData<Model> getLiveDataWeatherHistory() {
-        if (liveDataWeatherHistory == null) {
-            liveDataWeatherHistory = new MutableLiveData<>();
-            liveDataWeatherHistory.setValue(createWeatherHistoryModel());
-        }
-        return liveDataWeatherHistory;
+    public MutableLiveData<WeatherHistoryModel> getWeatherHistoryLiveData() {
+        return weatherHistoryLiveData;
     }
 
-    private Model createCitiesModel() {
+    public MutableLiveData<ForecastAnswerModel> getForecastAnswerLiveData() {
+        return forecastAnswerLiveData;
+    }
+
+    public MutableLiveData<Uri> getToBrowserEvent() {
+        return toBrowserEvent;
+    }
+
+    private CitiesModel createCitiesModel() {
         Context context = getApplication();
         List<String> cities = new ArrayList<>(Arrays.asList(context.getResources().getStringArray(R.array.cities)));
-        return new Model(cities.get(0), cities);
+        return new CitiesModel(cities.get(0), cities);
     }
 
-    private Model createCheckBoxesData() {
-        return new Model(false, false, false);
+    private CheckBoxesModel createCheckBoxesData() {
+        return new CheckBoxesModel(false,
+                false,
+                false);
     }
 
-    private Model createSettingsModel() {
-        return new Model(new Model.WeatherParameter(Constants.CELSIUS_STRING, Constants.CELSIUS_ATTRIBUTE));
+    private WeatherParameterModel createWeatherParameterModel() {
+        return new WeatherParameterModel(Constants.CELSIUS_STRING, Constants.CELSIUS_ATTRIBUTE);
     }
 
-    private Model createWeatherHistoryModel() {
-        return new Model(new ArrayList<>());
+    private WeatherHistoryModel createWeatherHistoryModel() {
+        return new WeatherHistoryModel(new ArrayList<>());
     }
 
-    private Model getCitiesModel() {
-        return liveDataCities.getValue();
+    private CitiesModel getCitiesModel() {
+        return citiesLiveData.getValue();
     }
 
-    private Model getCheckBoxesModel() {
-        return liveDataCheckBoxes.getValue();
+    private CheckBoxesModel getCheckBoxesModel() {
+        return checkBoxesLiveData.getValue();
     }
 
-    private Model getSettingsModel() {
-        return liveDataSettings.getValue();
+    private WeatherParameterModel getWeatherParameterModel() {
+        return weatherParameterLiveData.getValue();
     }
 
-    private Model getWeatherHistoryModel() {
-        return liveDataWeatherHistory.getValue();
+    private WeatherHistoryModel getWeatherHistoryModel() {
+        return weatherHistoryLiveData.getValue();
     }
 
     public List<String> getListCities() {
@@ -103,15 +122,12 @@ public class DataViewModel extends AndroidViewModel {
         return getCitiesModel().getCityName();
     }
 
-    public void saveCitiesData(String cityName, boolean isAddingNewCity) {
-        Model cityModel = getCitiesModel();
+    public void saveCitiesData(String newCityName, boolean isAddingNewCity) {
+        List<String> citiesList = getListCities();
         if (isAddingNewCity) {
-            List<String> citiesList = getListCities();
-            citiesList.add(cityName);
-            cityModel.setCities(citiesList);
+            citiesList.add(newCityName);
         }
-        cityModel.setCityName(cityName);
-        liveDataCities.setValue(cityModel);
+        citiesLiveData.postValue(new CitiesModel(newCityName, citiesList));
     }
 
     public boolean isHumidityCheckBoxPressed() {
@@ -127,28 +143,78 @@ public class DataViewModel extends AndroidViewModel {
     }
 
     public void saveCheckBoxesData(boolean isHumidityPressed, boolean isPressurePressed, boolean isWindSpeedPressed) {
-        Model checkBoxModel = getCheckBoxesModel();
-        checkBoxModel.setCheckBoxPressure(isPressurePressed);
-        checkBoxModel.setCheckBoxHumidity(isHumidityPressed);
-        checkBoxModel.setCheckBoxWindSpeed(isWindSpeedPressed);
-        liveDataCheckBoxes.setValue(checkBoxModel);
-    }
-
-    private Model.WeatherParameter getWeatherParameter() {
-        return getSettingsModel().getWeatherParameter();
+        checkBoxesLiveData.postValue(new CheckBoxesModel(isHumidityPressed,
+                isPressurePressed, isWindSpeedPressed));
     }
 
     public String getStringWeatherParameter() {
-        return getWeatherParameter().getStringWeatherParameter();
+        return getWeatherParameterModel().getStringWeatherParameter();
     }
 
     public String getAttribute() {
-        return getWeatherParameter().getWeatherAttribute();
+        return getWeatherParameterModel().getWeatherAttribute();
     }
 
     public void saveWeatherParameter(String stringWeatherParameter, String weatherAttribute) {
-        getWeatherParameter().setStringWeatherParameter(stringWeatherParameter);
-        getWeatherParameter().setWeatherAttribute(weatherAttribute);
+        weatherParameterLiveData.postValue(new WeatherParameterModel(stringWeatherParameter,
+                weatherAttribute));
+    }
+
+    private void initRetrofit() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.URL_FOR_API)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        openWeather = retrofit.create(OpenWeather.class);
+    }
+
+    public void loadWeather() {
+        openWeather.loadWeatherWithParameter(getCityName(), Constants.API_KEY, getStringWeatherParameter())
+                .enqueue(new Callback<WeatherRequest>() {
+                    @Override
+                    public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
+                        if (response.body() != null) {
+                            forecastAnswerLiveData.postValue(new ForecastAnswerModel(
+                                            response.body().getId(),
+                                            response.body().getMain().getTemp(),
+                                            response.body().getMain().getHumidity(),
+                                            response.body().getMain().getPressure(),
+                                            response.body().getWind().getSpeed(),
+                                            getAttribute(),
+                                            true,
+                                            response.code(),
+                                            response.body().getWeather()[0].getIcon()
+                                    )
+                            );
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<WeatherRequest> call, Throwable t) {
+                        forecastAnswerLiveData.postValue(new ForecastAnswerModel(
+                                        Constants.DEFAULT_CITY_INDEX,
+                                        Constants.DEFAULT_TEMPERATURE,
+                                        Constants.DEFAULT_HUMIDITY,
+                                        Constants.DEFAULT_PRESSURE,
+                                        Constants.DEFAULT_WIND_SPEED,
+                                        getAttribute(),
+                                        false,
+                                        404,
+                                        "01d"
+                                )
+                        );
+                    }
+                });
+    }
+
+
+    public void onShowWeatherOnInternetClick() {
+        if (forecastAnswerLiveData.getValue() == null) {
+            return;
+        }
+        int cityIndex = forecastAnswerLiveData.getValue().getCityIndex();
+        Uri uri = Uri.parse(Constants.URL_FOR_BROWSER + cityIndex);
+        toBrowserEvent.postValue(uri);
     }
 
     public void changeCitiesLocale(String region) {
@@ -164,40 +230,48 @@ public class DataViewModel extends AndroidViewModel {
                 cities.add(getListCities().get(i));
             }
         }
-        getCitiesModel().setCities(cities);
-        saveCitiesData(getListCities().get(position), false);
+        citiesLiveData.postValue(new CitiesModel(cities.get(position), cities));
     }
 
     public List<String> getWeatherHistoryList() {
         return getWeatherHistoryModel().getWeatherHistoryList();
     }
 
-    private void setLiveDataWeatherHistory(List<String> weatherHistoryList) {
-        getWeatherHistoryModel().setWeatherHistoryList(weatherHistoryList);
-    }
-
-    public void addWeatherHistory(String city, String value) {
+    public void saveWeatherHistory(String city, String value) {
         String weatherHistoryString = city + " " + value;
         List<String> weatherHistoryList = getWeatherHistoryList();
         if (!weatherHistoryList.contains(weatherHistoryString)) {
             weatherHistoryList.add(weatherHistoryString);
-            setLiveDataWeatherHistory(weatherHistoryList);
         }
+        weatherHistoryLiveData.postValue(new WeatherHistoryModel(weatherHistoryList));
     }
 
     public void clearCitiesData() {
-        liveDataCities.setValue(createCitiesModel());
+        citiesLiveData.postValue(createCitiesModel());
     }
 
     public void clearHistoryWeatherData() {
-        liveDataWeatherHistory.setValue(createWeatherHistoryModel());
+        weatherHistoryLiveData.postValue(createWeatherHistoryModel());
     }
 
     public void clearAllData() {
-        liveDataCities.setValue(createCitiesModel());
-        liveDataCheckBoxes.setValue(createCheckBoxesData());
-        liveDataSettings.setValue(createSettingsModel());
-        liveDataWeatherHistory.setValue(createWeatherHistoryModel());
+        citiesLiveData.postValue(createCitiesModel());
+        checkBoxesLiveData.postValue(createCheckBoxesData());
+        weatherParameterLiveData.postValue(createWeatherParameterModel());
+        weatherHistoryLiveData.postValue(createWeatherHistoryModel());
+    }
+
+    public void loadWeatherImage(ImageView imageView) {
+        Uri uri = Uri.parse(String.format(Constants.URL_IMAGE,
+                getForecastAnswerLiveData().getValue().getIconValue()));
+        Picasso.get()
+                .load(uri)
+                .resize(180, 180)
+                .into(imageView);
+    }
+
+    public void clearUriData() {
+        toBrowserEvent.postValue(null);
     }
 
 }

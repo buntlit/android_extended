@@ -36,11 +36,11 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.getLiveDataCities().observe(getViewLifecycleOwner(), model -> {
+        viewModel.getCitiesLiveData().observe(getViewLifecycleOwner(), model -> {
         });
-        viewModel.getLiveDataCheckBoxes().observe(getViewLifecycleOwner(), model -> {
+        viewModel.getCheckBoxesLiveData().observe(getViewLifecycleOwner(), model -> {
         });
-        viewModel.getLiveDataSettings().observe(getViewLifecycleOwner(), model -> {
+        viewModel.getWeatherParameterLiveData().observe(getViewLifecycleOwner(), model -> {
         });
         handleViews();
     }

@@ -30,4 +30,5 @@
     <string name="go_to_internet_settings">Go to Internet settings</string>
     <string name="server_error">No connection to server\nError: </string>
     <string name="show_default">Show default weather</string>
+    <string name="temperature_with_parameter" translatable="false">%1$.2f%2$s</string>
 </resources>

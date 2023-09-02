@@ -40,11 +40,11 @@ public class ChoosingCityFragment extends Fragment implements CitiesAdapter.OnIt
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.getLiveDataCities().observe(getViewLifecycleOwner(), model ->
+        viewModel.getCitiesLiveData().observe(getViewLifecycleOwner(), model ->
                 setAdapter());
-        viewModel.getLiveDataCheckBoxes().observe(getViewLifecycleOwner(), model -> {
+        viewModel.getCheckBoxesLiveData().observe(getViewLifecycleOwner(), model -> {
         });
-        viewModel.getLiveDataSettings().observe(getViewLifecycleOwner(), model ->
+        viewModel.getWeatherParameterLiveData().observe(getViewLifecycleOwner(), model ->
                 initView());
         handleViews();
     }

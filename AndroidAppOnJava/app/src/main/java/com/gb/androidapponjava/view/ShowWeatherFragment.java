@@ -2,14 +2,9 @@ package com.gb.androidapponjava.view;
 
 import static com.gb.androidapponjava.databinding.FragmentWeatherBinding.inflate;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,17 +19,13 @@ import androidx.navigation.Navigation;
 
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.databinding.FragmentWeatherBinding;
-import com.gb.androidapponjava.model.GetWeatherService;
-import com.gb.androidapponjava.modules.ForecastAnswer;
+import com.gb.androidapponjava.model.ForecastAnswerModel;
 import com.gb.androidapponjava.viewmodel.DataViewModel;
 
 public class ShowWeatherFragment extends Fragment {
 
     private DataViewModel viewModel;
     private FragmentWeatherBinding binding;
-    private ForecastAnswer answer;
-    private GetWeatherService weatherService;
-    private boolean bound = false;
 
     @Nullable
     @Override
@@ -48,45 +39,28 @@ public class ShowWeatherFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        requireActivity().bindService(new Intent(requireContext(), GetWeatherService.class),
-                connection, Context.BIND_AUTO_CREATE);
-        viewModel.getLiveDataCities().observe(getViewLifecycleOwner(), model -> {
-                    if (bound) {
-                        setWeather();
+
+        viewModel.getCitiesLiveData().observe(getViewLifecycleOwner(), model ->
+                viewModel.loadWeather()
+        );
+        viewModel.getCheckBoxesLiveData().observe(getViewLifecycleOwner(), model ->
+                showExtras()
+        );
+        viewModel.getWeatherParameterLiveData().observe(getViewLifecycleOwner(), model ->
+                viewModel.loadWeather()
+        );
+        viewModel.getForecastAnswerLiveData().observe(getViewLifecycleOwner(), this::setWeather);
+        viewModel.getToBrowserEvent().observe(getViewLifecycleOwner(), uri -> {
+                    if (uri != null) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                        viewModel.clearUriData();
                     }
                 }
         );
-        viewModel.getLiveDataCheckBoxes().observe(getViewLifecycleOwner(), model ->
-                showExtras()
-        );
-        viewModel.getLiveDataSettings().observe(getViewLifecycleOwner(), model -> {
-        });
         handleViews();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        requireActivity().unbindService(connection);
-    }
-
-    private final ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            weatherService = ((GetWeatherService.LocalBinder) iBinder).getWeatherService();
-            setWeather();
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            bound = false;
-        }
-    };
-
-    private void setWeather() {
-        answer = weatherService.getWeather(viewModel.getCityName(), viewModel.getStringWeatherParameter(),
-                viewModel.getAttribute());
+    private void setWeather(ForecastAnswerModel answer) {
         binding.city.setText(viewModel.getCityName());
         if (answer == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -99,7 +73,7 @@ public class ShowWeatherFragment extends Fragment {
                             startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
         } else if (answer.isResponse()) {
-            setWeatherValues();
+            setWeatherValues(answer);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle(R.string.alert_dialog_title).setMessage(getString(R.string.server_error) + answer.getResponseCode())
@@ -108,18 +82,20 @@ public class ShowWeatherFragment extends Fragment {
                             }
                     )
                     .setPositiveButton(R.string.show_default, (dialogInterface, i) ->
-                            setWeatherValues()
+                            setWeatherValues(answer)
                     )
                     .show();
         }
+        viewModel.loadWeatherImage(binding.weatherImage);
     }
 
-    private void setWeatherValues() {
-        binding.temperatureValue.setText(answer.getTemperature() + answer.getWeatherAttribute());
+    private void setWeatherValues(ForecastAnswerModel answer) {
+        binding.temperatureValue.setText(getString(R.string.temperature_with_parameter,
+                answer.getTemperature(), answer.getWeatherAttribute()));
         binding.humidityValue.setText(String.valueOf(answer.getHumidity()));
         binding.pressureValue.setText(String.valueOf(answer.getPressure()));
         binding.windSpeedValue.setText(String.valueOf(answer.getWindSpeed()));
-        viewModel.addWeatherHistory(
+        viewModel.saveWeatherHistory(
                 (String) binding.city.getText(),
                 (String) binding.temperatureValue.getText()
         );
@@ -150,7 +126,7 @@ public class ShowWeatherFragment extends Fragment {
         );
 
         binding.showWeatherOnInternet.setOnClickListener(view ->
-                startBrowserWithWeather()
+                viewModel.onShowWeatherOnInternetClick()
         );
 
         binding.buttonBackToChoose.setOnClickListener(view ->
@@ -168,11 +144,5 @@ public class ShowWeatherFragment extends Fragment {
 
     private void startSettingsFragment() {
         Navigation.findNavController(requireView()).navigate(R.id.settingsFragment);
-    }
-
-    private void startBrowserWithWeather() {
-        final String address = "https://openweathermap.org/city/";
-        Uri uri = Uri.parse(address + answer.getCityIndex());
-        startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 }

@@ -15,7 +15,7 @@
         android:theme="@style/Theme.AndroidAppOnJava"
         tools:targetApi="31">
         <service
-            android:name=".model.GetWeatherService"/>
+            android:name=".modules.GetWeatherService"/>
 
         <activity
             android:name=".view.MainActivity"

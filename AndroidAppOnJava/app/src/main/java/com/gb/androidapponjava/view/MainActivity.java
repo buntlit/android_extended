@@ -36,14 +36,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding = ActivityChooseCityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         viewModel = new ViewModelProvider(this).get(DataViewModel.class);
-        viewModel.getLiveDataCities().observe(this, model -> {
-        });
-        viewModel.getLiveDataCheckBoxes().observe(this, model -> {
-        });
-        viewModel.getLiveDataSettings().observe(this, model -> {
-        });
-        viewModel.getLiveDataWeatherHistory().observe(this, model -> {
-        });
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             drawer = (DrawerLayout) binding.getRoot();
             NavHostFragment navHostFragment =

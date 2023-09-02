@@ -38,7 +38,7 @@ public class WeatherHistoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.getLiveDataWeatherHistory().observe(requireActivity(), model -> {
+        viewModel.getWeatherHistoryLiveData().observe(requireActivity(), model -> {
             initView();
         });
     }

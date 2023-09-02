@@ -1,13 +1,11 @@
-package com.gb.androidapponjava.model;
+package com.gb.androidapponjava.modules;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
-import com.gb.androidapponjava.modules.Constants;
-import com.gb.androidapponjava.modules.ForecastAnswer;
-import com.gb.androidapponjava.modules.WeatherRequest;
+import com.gb.androidapponjava.model.ForecastAnswerModel;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -43,12 +41,12 @@ public class GetWeatherService extends Service {
         super.onCreate();
     }
 
-    public ForecastAnswer getWeather(String citiName, String weatherParameter, String attribute){
+    public ForecastAnswerModel getWeather(String citiName, String weatherParameter, String attribute){
         final String URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s%s";
         final String API_KEY = "2f0e5b22131acf399237f29d84fdcfeb";
         final String REQUEST_METHOD = "GET";
         final int TIMEOUT = 10000;
-        final ForecastAnswer[] answer = new ForecastAnswer[1];
+        final ForecastAnswerModel[] answer = new ForecastAnswerModel[1];
 
         try {
             final java.net.URL uri = new URL(String.format(URL, citiName, API_KEY, weatherParameter));
@@ -64,13 +62,14 @@ public class GetWeatherService extends Service {
                         String result = in.lines().collect(Collectors.joining("\n"));
                         Gson gson = new Gson();
                         final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
-                        answer[0] = new ForecastAnswer(weatherRequest.getId(), weatherRequest.getMain().getTemp(),
+                        answer[0] = new ForecastAnswerModel(weatherRequest.getId(), weatherRequest.getMain().getTemp(),
                                 weatherRequest.getMain().getHumidity(), weatherRequest.getMain().getPressure(),
-                                weatherRequest.getWind().getSpeed(), attribute, true, responseCode);
+                                weatherRequest.getWind().getSpeed(), attribute, true,
+                                responseCode, weatherRequest.getWeather()[0].getIcon());
                     } else {
-                        answer[0] = new ForecastAnswer(Constants.DEFAULT_CITY_INDEX, Constants.DEFAULT_TEMPERATURE,
+                        answer[0] = new ForecastAnswerModel(Constants.DEFAULT_CITY_INDEX, Constants.DEFAULT_TEMPERATURE,
                                 Constants.DEFAULT_HUMIDITY, Constants.DEFAULT_PRESSURE,
-                                Constants.DEFAULT_WIND_SPEED, attribute, false, responseCode);
+                                Constants.DEFAULT_WIND_SPEED, attribute, false, responseCode, "01d");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

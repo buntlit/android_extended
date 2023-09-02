@@ -3,7 +3,7 @@ package com.gb.androidapponjava.modules;
 public class WeatherRequest {
     private Main main;
     private Wind wind;
-
+    private Weather[] weather;
     private int id;
 
     public Main getMain() {
@@ -16,5 +16,9 @@ public class WeatherRequest {
 
     public int getId() {
         return id;
+    }
+
+    public Weather[] getWeather() {
+        return weather;
     }
 }
