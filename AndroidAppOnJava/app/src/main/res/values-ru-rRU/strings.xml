@@ -31,5 +31,8 @@
     <string name="go_to_internet_settings">Перейти в настройки интернета</string>
     <string name="server_error">Нет подключения к серверу\nОшибка: </string>
     <string name="show_default">Показать погоду по умолчанию</string>
+    <string name="sort_by_date">Сортировать по дате</string>
+    <string name="sort_by_city">Сортировать по городу</string>
+    <string name="sort_by_temperature">Сортировать по температуре</string>
 
 </resources>

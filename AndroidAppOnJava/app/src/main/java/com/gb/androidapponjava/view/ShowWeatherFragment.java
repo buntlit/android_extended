@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import androidx.navigation.Navigation;
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.databinding.FragmentWeatherBinding;
 import com.gb.androidapponjava.model.ForecastAnswerModel;
+import com.gb.androidapponjava.model.WeatherHistory;
 import com.gb.androidapponjava.viewmodel.DataViewModel;
 
 public class ShowWeatherFragment extends Fragment {
@@ -95,10 +97,9 @@ public class ShowWeatherFragment extends Fragment {
         binding.humidityValue.setText(String.valueOf(answer.getHumidity()));
         binding.pressureValue.setText(String.valueOf(answer.getPressure()));
         binding.windSpeedValue.setText(String.valueOf(answer.getWindSpeed()));
-        viewModel.saveWeatherHistory(
-                (String) binding.city.getText(),
-                (String) binding.temperatureValue.getText()
-        );
+        viewModel.insert(new WeatherHistory(answer.getDate(),
+                viewModel.getCityName(),
+                answer.getTemperature()));
     }
 
     private void showExtras() {

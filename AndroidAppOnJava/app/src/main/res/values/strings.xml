@@ -31,4 +31,7 @@
     <string name="server_error">No connection to server\nError: </string>
     <string name="show_default">Show default weather</string>
     <string name="temperature_with_parameter" translatable="false">%1$.2f%2$s</string>
+    <string name="sort_by_date">Sort by date</string>
+    <string name="sort_by_city">Sort by city</string>
+    <string name="sort_by_temperature">Sort by temperature</string>
 </resources>

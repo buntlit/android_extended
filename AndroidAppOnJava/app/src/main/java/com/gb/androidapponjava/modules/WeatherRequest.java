@@ -6,6 +6,8 @@ public class WeatherRequest {
     private Weather[] weather;
     private int id;
 
+    private long dt;
+
     public Main getMain() {
         return main;
     }
@@ -20,5 +22,9 @@ public class WeatherRequest {
 
     public Weather[] getWeather() {
         return weather;
+    }
+
+    public long getDt() {
+        return dt;
     }
 }

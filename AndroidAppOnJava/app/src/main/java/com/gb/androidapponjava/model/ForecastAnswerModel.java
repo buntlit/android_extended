@@ -10,10 +10,11 @@ public class ForecastAnswerModel {
     private final boolean isResponse;
     private final int responseCode;
     private final String iconValue;
+    private final long date;
 
     public ForecastAnswerModel(int cityIndex, float temperature, float humidity, float pressure,
                                float windSpeed, String weatherAttribute, boolean isResponse,
-                               int responseCode, String iconValue) {
+                               int responseCode, String iconValue, long date) {
         this.cityIndex = cityIndex;
         this.temperature = temperature;
         this.humidity = humidity;
@@ -23,6 +24,7 @@ public class ForecastAnswerModel {
         this.isResponse = isResponse;
         this.responseCode = responseCode;
         this.iconValue = iconValue;
+        this.date = date;
     }
 
     public int getCityIndex() {
@@ -59,5 +61,9 @@ public class ForecastAnswerModel {
 
     public String getIconValue() {
         return iconValue;
+    }
+
+    public long getDate() {
+        return date;
     }
 }

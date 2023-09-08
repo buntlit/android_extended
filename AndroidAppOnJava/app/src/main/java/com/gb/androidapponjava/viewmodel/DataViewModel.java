@@ -9,13 +9,15 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.model.CheckBoxesModel;
 import com.gb.androidapponjava.model.CitiesModel;
 import com.gb.androidapponjava.model.ForecastAnswerModel;
-import com.gb.androidapponjava.model.WeatherHistoryModel;
+import com.gb.androidapponjava.model.WeatherHistory;
+import com.gb.androidapponjava.model.WeatherHistoryRepository;
 import com.gb.androidapponjava.model.WeatherParameterModel;
 import com.gb.androidapponjava.modules.Constants;
 import com.gb.androidapponjava.modules.OpenWeather;
@@ -24,6 +26,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,19 +41,21 @@ public class DataViewModel extends AndroidViewModel {
     private final MutableLiveData<CitiesModel> citiesLiveData;
     private final MutableLiveData<CheckBoxesModel> checkBoxesLiveData;
     private final MutableLiveData<WeatherParameterModel> weatherParameterLiveData;
-    private final MutableLiveData<WeatherHistoryModel> weatherHistoryLiveData;
     private final MutableLiveData<ForecastAnswerModel> forecastAnswerLiveData;
     private final MutableLiveData<Uri> toBrowserEvent;
     private OpenWeather openWeather;
+    private WeatherHistoryRepository repository;
+    private LiveData<List<WeatherHistory>> allWeatherHistory;
 
     public DataViewModel(@NonNull Application application) {
         super(application);
         citiesLiveData = new MutableLiveData<>(createCitiesModel());
         checkBoxesLiveData = new MutableLiveData<>(createCheckBoxesData());
         weatherParameterLiveData = new MutableLiveData<>(createWeatherParameterModel());
-        weatherHistoryLiveData = new MutableLiveData<>(createWeatherHistoryModel());
         forecastAnswerLiveData = new MutableLiveData<>();
         toBrowserEvent = new MutableLiveData<>();
+        repository = new WeatherHistoryRepository(application);
+        allWeatherHistory = repository.getWeatherHistory();
         initRetrofit();
     }
 
@@ -66,13 +71,21 @@ public class DataViewModel extends AndroidViewModel {
         return weatherParameterLiveData;
     }
 
-    public MutableLiveData<WeatherHistoryModel> getWeatherHistoryLiveData() {
-        return weatherHistoryLiveData;
-    }
-
     public MutableLiveData<ForecastAnswerModel> getForecastAnswerLiveData() {
         return forecastAnswerLiveData;
     }
+
+    public LiveData<List<WeatherHistory>> getFilterWeatherHistoryByDate() {
+        return repository.getWeatherHistoryFilteredByDate();
+    }
+
+    public LiveData<List<WeatherHistory>> getFilterWeatherHistoryByCity() {
+        return repository.getWeatherHistoryFilteredByCity();
+    }
+    public LiveData<List<WeatherHistory>> getFilterWeatherHistoryByTemperature() {
+        return repository.getWeatherHistoryFilteredByTemperature();
+    }
+
 
     public MutableLiveData<Uri> getToBrowserEvent() {
         return toBrowserEvent;
@@ -94,10 +107,6 @@ public class DataViewModel extends AndroidViewModel {
         return new WeatherParameterModel(Constants.CELSIUS_STRING, Constants.CELSIUS_ATTRIBUTE);
     }
 
-    private WeatherHistoryModel createWeatherHistoryModel() {
-        return new WeatherHistoryModel(new ArrayList<>());
-    }
-
     private CitiesModel getCitiesModel() {
         return citiesLiveData.getValue();
     }
@@ -108,10 +117,6 @@ public class DataViewModel extends AndroidViewModel {
 
     private WeatherParameterModel getWeatherParameterModel() {
         return weatherParameterLiveData.getValue();
-    }
-
-    private WeatherHistoryModel getWeatherHistoryModel() {
-        return weatherHistoryLiveData.getValue();
     }
 
     public List<String> getListCities() {
@@ -183,7 +188,8 @@ public class DataViewModel extends AndroidViewModel {
                                             getAttribute(),
                                             true,
                                             response.code(),
-                                            response.body().getWeather()[0].getIcon()
+                                            response.body().getWeather()[0].getIcon(),
+                                            response.body().getDt()
                                     )
                             );
                         }
@@ -200,7 +206,8 @@ public class DataViewModel extends AndroidViewModel {
                                         getAttribute(),
                                         false,
                                         404,
-                                        "01d"
+                                        "01d",
+                                        Calendar.getInstance().getTime().getTime()
                                 )
                         );
                     }
@@ -233,17 +240,8 @@ public class DataViewModel extends AndroidViewModel {
         citiesLiveData.postValue(new CitiesModel(cities.get(position), cities));
     }
 
-    public List<String> getWeatherHistoryList() {
-        return getWeatherHistoryModel().getWeatherHistoryList();
-    }
-
-    public void saveWeatherHistory(String city, String value) {
-        String weatherHistoryString = city + " " + value;
-        List<String> weatherHistoryList = getWeatherHistoryList();
-        if (!weatherHistoryList.contains(weatherHistoryString)) {
-            weatherHistoryList.add(weatherHistoryString);
-        }
-        weatherHistoryLiveData.postValue(new WeatherHistoryModel(weatherHistoryList));
+    public void insert(WeatherHistory weatherHistory) {
+        repository.insert(weatherHistory);
     }
 
     public void clearCitiesData() {
@@ -251,14 +249,15 @@ public class DataViewModel extends AndroidViewModel {
     }
 
     public void clearHistoryWeatherData() {
-        weatherHistoryLiveData.postValue(createWeatherHistoryModel());
+        repository.deleteAll();
     }
 
     public void clearAllData() {
-        citiesLiveData.postValue(createCitiesModel());
+        clearCitiesData();
         checkBoxesLiveData.postValue(createCheckBoxesData());
         weatherParameterLiveData.postValue(createWeatherParameterModel());
-        weatherHistoryLiveData.postValue(createWeatherHistoryModel());
+        clearHistoryWeatherData();
+        clearUriData();
     }
 
     public void loadWeatherImage(ImageView imageView) {

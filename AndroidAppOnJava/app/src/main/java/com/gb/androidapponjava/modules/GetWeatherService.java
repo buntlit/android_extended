@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -65,11 +66,12 @@ public class GetWeatherService extends Service {
                         answer[0] = new ForecastAnswerModel(weatherRequest.getId(), weatherRequest.getMain().getTemp(),
                                 weatherRequest.getMain().getHumidity(), weatherRequest.getMain().getPressure(),
                                 weatherRequest.getWind().getSpeed(), attribute, true,
-                                responseCode, weatherRequest.getWeather()[0].getIcon());
+                                responseCode, weatherRequest.getWeather()[0].getIcon(), weatherRequest.getDt());
                     } else {
                         answer[0] = new ForecastAnswerModel(Constants.DEFAULT_CITY_INDEX, Constants.DEFAULT_TEMPERATURE,
                                 Constants.DEFAULT_HUMIDITY, Constants.DEFAULT_PRESSURE,
-                                Constants.DEFAULT_WIND_SPEED, attribute, false, responseCode, "01d");
+                                Constants.DEFAULT_WIND_SPEED, attribute, false, responseCode,
+                                "01d", Calendar.getInstance().getTime().getDate());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

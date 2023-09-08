@@ -1,21 +1,23 @@
 package com.gb.androidapponjava.view;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gb.androidapponjava.databinding.ItemWeatherHistoryBinding;
+import com.gb.androidapponjava.model.WeatherHistory;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
 
-class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAdapter.WeatherHistoryViewHolder> {
+class WeatherHistoryAdapter extends ListAdapter<WeatherHistory, WeatherHistoryAdapter.WeatherHistoryViewHolder> {
 
-    private final List<String> stringList;
-
-    public WeatherHistoryAdapter(List<String> stringList) {
-        this.stringList = stringList;
+    public WeatherHistoryAdapter(DiffUtil.ItemCallback<WeatherHistory> diffCallback) {
+        super(diffCallback);
     }
 
     @NonNull
@@ -27,16 +29,7 @@ class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAdapter.W
 
     @Override
     public void onBindViewHolder(@NonNull WeatherHistoryViewHolder holder, int position) {
-        holder.bind(stringList.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        if (stringList != null) {
-            return stringList.size();
-        } else {
-            return 0;
-        }
+        holder.bind(getItem(position));
     }
 
     public static class WeatherHistoryViewHolder extends RecyclerView.ViewHolder {
@@ -47,9 +40,24 @@ class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAdapter.W
             this.binding = binding;
         }
 
-        void bind(String value) {
-            binding.weatherHistoryValue.setText(value);
+        void bind(WeatherHistory current) {
+            binding.weatherHistoryCity.setText(current.getCity());
+            binding.weatherHistoryTemperature.setText(String.valueOf(current.getTemperature()));
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+            binding.weatherHistoryDate.setText(df.format(current.getDate() * 1000));
         }
 
+    }
+
+    public static class WeatherHistoryDiff extends DiffUtil.ItemCallback<WeatherHistory> {
+        @Override
+        public boolean areItemsTheSame(@NonNull WeatherHistory oldItem, @NonNull WeatherHistory newItem) {
+            return oldItem == newItem;
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull WeatherHistory oldItem, @NonNull WeatherHistory newItem) {
+            return oldItem.getDate() == newItem.getDate();
+        }
     }
 }
