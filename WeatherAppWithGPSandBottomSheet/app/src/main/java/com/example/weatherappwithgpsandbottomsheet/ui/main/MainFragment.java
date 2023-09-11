@@ -33,17 +33,18 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.chooseWeather.setOnClickListener(view1 -> {
+        binding.chooseWeather.setOnClickListener(button -> {
             MainBottomSheetDialogFragment dialogFragment = MainBottomSheetDialogFragment.newInstance();
             dialogFragment.show(getParentFragmentManager(), "dialog");
         });
-        viewModel.getLiveData().observe(getViewLifecycleOwner(), model ->
-                setWeather()
-        );
+        viewModel.getModelLiveData().observe(getViewLifecycleOwner(), model -> {
+            viewModel.getWeather();
+        });
+
+        viewModel.getResponseLiveData().observe(getViewLifecycleOwner(), this::setWeather);
     }
 
-    private void setWeather() {
-        ForecastResponse response = viewModel.getWeather();
+    private void setWeather(ForecastResponse response) {
         if (response != null) {
             binding.extras.setVisibility(View.VISIBLE);
             binding.city.setText(response.getCityName());

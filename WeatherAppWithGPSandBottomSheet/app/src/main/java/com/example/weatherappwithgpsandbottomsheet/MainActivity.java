@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         getPermissions();
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        viewModel.getLiveData();
+        viewModel.getModelLiveData();
     }
 
     private void getPermissions() {

@@ -4,6 +4,8 @@ import static com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCU
 
 import android.Manifest;
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
@@ -31,33 +33,41 @@ import java.util.stream.Collectors;
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainViewModel extends AndroidViewModel {
-    private MutableLiveData<Model> liveData;
+    private final MutableLiveData<Model> modelLiveData;
+    private final MutableLiveData<ForecastResponse> responseLiveData;
+    private final SharedPreferences preferences;
+    private final String PREFERENCES_NAME = "MODEL";
+    private final String RESPONSE_KEY = "RESPONSE";
+    private final String LATITUDE_KEY = "LAT";
+    private final String LONGITUDE_KEY = "LON";
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-    }
-
-    public MutableLiveData<Model> getLiveData() {
-        if (liveData == null) {
-            liveData = new MutableLiveData<>();
-            liveData.setValue(createLiveData());
+        preferences = getApplication().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        modelLiveData = new MutableLiveData<>(createModelLiveData());
+        responseLiveData = new MutableLiveData<>();
+        if (preferences.contains(RESPONSE_KEY)) {
+            modelLiveData.postValue(new Model(preferences.getString(RESPONSE_KEY, ""),
+                    preferences.getFloat(LATITUDE_KEY, 0),
+                    preferences.getFloat(LONGITUDE_KEY, 0)));
         }
-        return liveData;
+
     }
 
-    private Model createLiveData() {
+    public MutableLiveData<Model> getModelLiveData() {
+        return modelLiveData;
+    }
+
+    public MutableLiveData<ForecastResponse> getResponseLiveData() {
+        return responseLiveData;
+    }
+
+    private Model createModelLiveData() {
         return new Model("", 0, 0);
     }
 
     private Model getModel() {
-        return getLiveData().getValue();
-    }
-
-
-    private void setButtonResponse(String buttonResponse) {
-        Model model = getModel();
-        model.setButtonResponse(buttonResponse);
-        liveData.setValue(model);
+        return getModelLiveData().getValue();
     }
 
     private Double getLongitude() {
@@ -68,24 +78,15 @@ public class MainViewModel extends AndroidViewModel {
         return getModel().getLatitude();
     }
 
-    private void setLocation(Double lat, Double lon, String buttonResponse) {
-        Model model = getModel();
-        model.setLatitude(lat);
-        model.setLongitude(lon);
-        model.setButtonResponse(buttonResponse);
-        liveData.setValue(model);
-    }
-
-    public String getButtonResponse() {
+    private String getButtonResponse() {
         return getModel().getButtonResponse();
     }
 
-    public ForecastResponse getWeather() {
+    public void getWeather() {
         final String URL = "https://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no&lang=ru";
         final String API_KEY = "cba6db1af5184e1b98e152915231008";
         final String REQUEST_METHOD = "GET";
         final int TIMEOUT = 5000;
-        final ForecastResponse[] response = new ForecastResponse[1];
         String requestCity;
         if (!getButtonResponse().equals("")) {
             if (getButtonResponse().equals(getApplication().getString(R.string.gps))) {
@@ -105,10 +106,13 @@ public class MainViewModel extends AndroidViewModel {
                         String result = reader.lines().collect(Collectors.joining("\n"));
                         Gson gson = new Gson();
                         final WeatherResponse weatherResponse = gson.fromJson(result, WeatherResponse.class);
-                        response[0] = new ForecastResponse(weatherResponse.getLocation().getName(),
-                                weatherResponse.getCurrent().getTemp_c(), weatherResponse.getCurrent().getCondition().getText(),
-                                weatherResponse.getCurrent().getFeelslike_c(), weatherResponse.getCurrent().getHumidity(),
-                                weatherResponse.getCurrent().getWind_kph());
+                        responseLiveData.postValue(new ForecastResponse(
+                                weatherResponse.getLocation().getName(),
+                                weatherResponse.getCurrent().getTemp_c(),
+                                weatherResponse.getCurrent().getCondition().getText(),
+                                weatherResponse.getCurrent().getFeelslike_c(),
+                                weatherResponse.getCurrent().getHumidity(),
+                                weatherResponse.getCurrent().getWind_kph()));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     } finally {
@@ -123,15 +127,23 @@ public class MainViewModel extends AndroidViewModel {
                 throw new RuntimeException(e);
             }
         }
-        return response[0];
     }
 
     public void saveModel(String buttonResponse) {
         if (buttonResponse.equals(getApplication().getString(R.string.gps))) {
             getLocationGPS(buttonResponse);
         } else {
-            setButtonResponse(buttonResponse);
+            saveModelLivaData(buttonResponse, getLatitude(), getLongitude());
         }
+    }
+
+    private void saveModelLivaData(String buttonResponse, Double lat, Double lon) {
+        modelLiveData.postValue(new Model(buttonResponse, lat, lon));
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(RESPONSE_KEY, buttonResponse);
+        editor.putFloat(LATITUDE_KEY, lat.floatValue());
+        editor.putFloat(LONGITUDE_KEY, lon.floatValue());
+        editor.apply();
     }
 
     private void getLocationGPS(String buttonResponse) {
@@ -155,7 +167,7 @@ public class MainViewModel extends AndroidViewModel {
                 return false;
             }
         }).addOnSuccessListener(location ->
-                setLocation(location.getLatitude(), location.getLongitude(), buttonResponse)
+                saveModelLivaData(buttonResponse, location.getLatitude(), location.getLongitude())
         );
     }
 }
