@@ -1,7 +1,12 @@
 package com.gb.androidapponjava.view;
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -17,10 +22,12 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.gb.androidapponjava.LowBatteryAndChangeConnectionReceiver;
 import com.gb.androidapponjava.R;
 import com.gb.androidapponjava.databinding.ActivityChooseCityBinding;
 import com.gb.androidapponjava.viewmodel.DataViewModel;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -29,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AppBarConfiguration appBarConfiguration;
     private DrawerLayout drawer;
     private NavController navController;
+    private final BroadcastReceiver receiver = new LowBatteryAndChangeConnectionReceiver();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +56,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
             binding.navView.setNavigationItemSelectedListener(this);
         }
-
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_BATTERY_LOW);
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(receiver, filter);
+        initTokenForRegister();
     }
 
     @Override
@@ -105,5 +117,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+        binding = null;
+    }
+
+    private void initTokenForRegister() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task ->
+                        Log.d("TAG", "initToken: " + task.getResult())
+                );
     }
 }

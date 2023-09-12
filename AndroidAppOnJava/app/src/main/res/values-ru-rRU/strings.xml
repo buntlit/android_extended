@@ -34,5 +34,7 @@
     <string name="sort_by_date">Сортировать по дате</string>
     <string name="sort_by_city">Сортировать по городу</string>
     <string name="sort_by_temperature">Сортировать по температуре</string>
+    <string name="connected_to_internet_alert">Подключен к интернету</string>
+    <string name="low_battery_alert">Низкий заряд батареи</string>
 
 </resources>

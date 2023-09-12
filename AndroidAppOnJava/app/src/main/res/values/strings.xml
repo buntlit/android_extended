@@ -34,4 +34,6 @@
     <string name="sort_by_date">Sort by date</string>
     <string name="sort_by_city">Sort by city</string>
     <string name="sort_by_temperature">Sort by temperature</string>
+    <string name="connected_to_internet_alert">Connected to Internet</string>
+    <string name="low_battery_alert">Low battery</string>
 </resources>

@@ -240,7 +240,7 @@ public class DataViewModel extends AndroidViewModel {
         citiesLiveData.postValue(new CitiesModel(cities.get(position), cities));
     }
 
-    public void insert(WeatherHistory weatherHistory) {
+    public void insertWeatherHistory(WeatherHistory weatherHistory) {
         repository.insert(weatherHistory);
     }
 
