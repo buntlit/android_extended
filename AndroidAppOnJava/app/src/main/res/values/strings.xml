@@ -36,4 +36,6 @@
     <string name="sort_by_temperature">Sort by temperature</string>
     <string name="connected_to_internet_alert">Connected to Internet</string>
     <string name="low_battery_alert">Low battery</string>
+    <string name="web_client_id" translatable="false">900044642955-35ebqklai61o6sjscae0p9bv4j4akqhf.apps.googleusercontent.com</string>
+    <string name="header_sign_out_button">Sign out</string>
 </resources>

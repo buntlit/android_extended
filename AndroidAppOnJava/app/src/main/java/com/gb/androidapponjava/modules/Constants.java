@@ -18,4 +18,9 @@ public final class Constants {
     public static final String URL_FOR_BROWSER = "https://openweathermap.org/city/";
     public static final String API_KEY = "2f0e5b22131acf399237f29d84fdcfeb";
     public static final String URL_IMAGE = "https://openweathermap.org/img/wn/%s.png";
+    public static final String PREFERENCES_NAME = "singin";
+    public static final String PREFERENCES_USERNAME = "user";
+    public static final String PREFERENCES_EMAIL = "email";
+    public static final String PREFERENCES_URI = "uri";
+    public static final String PREFERENCES_DEFAULT = "";
 }
