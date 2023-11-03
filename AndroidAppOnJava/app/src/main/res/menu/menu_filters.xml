@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/menu_filter_data"
+            android:title="@string/sort_by_date" />
+        <item
+            android:id="@+id/menu_filter_city"
+            android:title="@string/sort_by_city" />
+        <item
+            android:id="@+id/menu_filter_temperature"
+            android:title="@string/sort_by_temperature" />
+    </group>
+</menu>

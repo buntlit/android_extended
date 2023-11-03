@@ -2,8 +2,9 @@
 <resources>
     <string name="app_name">Андроид приложение на Java</string>
     <string name="choosing_city_name">Выбор города</string>
+    <string name="weather">Погода</string>
     <string name="settings">Настройки</string>
-    <string name="city1">Москва</string>
+    <string name="weather_history">Погодная история</string>
     <string name="enter_city">Введите город</string>
     <string name="humidity">Влажность</string>
     <string name="pressure">Давление</string>
@@ -12,8 +13,29 @@
     <string name="settings_button">Настройки</string>
     <string name="show_weather_on_internet">Показать погоду в Интернете</string>
     <string name="night_theme">Ночная тема</string>
-    <string name="orientation_portrait">Портретная ориентация</string>
-    <string name="orientation_landscape">Книжная ориентация</string>
+    <string name="localization_text">Язык:</string>
     <string name="localisation_eng">Английский язык</string>
     <string name="localisation_rus">Русский язык</string>
+    <string name="weather_parameter_text">Погодные параметры:</string>
+    <string name="weather_at_celsius">Градусы Цельсия</string>
+    <string name="weather_at_kelvin">Кельвины</string>
+    <string name="weather_at_fahrenheit">Фаренгейты</string>
+    <string name="back_button">Назад</string>
+    <string name="clear_cities_data">Очистить города</string>
+    <string name="clear_weather_history_data">Очистить историю</string>
+    <string name="clear_all_data">Очистить всё</string>
+    <string name="header_title">Боковое меню</string>
+    <string name="alert_dialog_title">ПРЕДУПРЕЖДЕНИЕ</string>
+    <string name="internet_error">Нет подключения к интернету</string>
+    <string name="cancel_dialog_button">Отмена</string>
+    <string name="go_to_internet_settings">Перейти в настройки интернета</string>
+    <string name="server_error">Нет подключения к серверу\nОшибка: </string>
+    <string name="show_default">Показать погоду по умолчанию</string>
+    <string name="sort_by_date">Сортировать по дате</string>
+    <string name="sort_by_city">Сортировать по городу</string>
+    <string name="sort_by_temperature">Сортировать по температуре</string>
+    <string name="connected_to_internet_alert">Подключен к интернету</string>
+    <string name="low_battery_alert">Низкий заряд батареи</string>
+    <string name="header_sign_out_button">Выход</string>
+
 </resources>
